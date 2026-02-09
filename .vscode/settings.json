@@ -1,0 +1,4 @@
+{
+  "yaml.customTags": ["!Ref", "!Sub", "!GetAtt", "!Join", "!Select", "!Split"],
+  "cfnLint.path": "~/Library/Python/3.9/bin/cfn-lint"
+}

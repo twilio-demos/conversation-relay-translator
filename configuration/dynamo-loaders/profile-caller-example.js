@@ -40,65 +40,64 @@ sourceVoice: ("Matthew-Generative") // Voice to use for the caller
   * 
  */
 
-let userProfile = 
-{
-  "pk": {
-    "S": "+14155551212"
+let userProfile = {
+  pk: {
+    S: "+14707130015",
   },
-  "sk": {
-    "S": "profile"
+  sk: {
+    S: "profile",
   },
-  "calleeDetails": {
-    "BOOL": true
+  calleeDetails: {
+    BOOL: true,
   },
-  "calleeLanguage": {
-    "S": "es-MX"
+  calleeLanguage: {
+    S: "en-US",
   },
-  "calleeLanguageCode": {
-    "S": "es-MX"
+  calleeLanguageCode: {
+    S: "en-US",
   },
-  "calleeLanguageFriendly": {
-    "S": "Spanish - Mexico"
+  calleeLanguageFriendly: {
+    S: "English - United States",
   },
-  "calleeNumber": {
-    "S": "+19495553434"
+  calleeNumber: {
+    S: "+12054413436",
   },
-  "calleeTranscriptionProvider": {
-    "S": "Deepgram"
+  calleeTranscriptionProvider: {
+    S: "Deepgram",
   },
-  "calleeTtsProvider": {
-    "S": "Amazon"
+  calleeTtsProvider: {
+    S: "Amazon",
   },
-  "calleeVoice": {
-    "S": "Lupe-Generative"
+  calleeVoice: {
+    S: "Matthew-Generative",
   },
-  "name": {
-    "S": "Dan"
+  name: {
+    S: "Dan",
   },
-  "pk1": {
-    "S": "profile"
+  pk1: {
+    S: "profile",
   },
-  "sk1": {
-    "S": "+14155551212"
+  sk1: {
+    S: "+14707130015",
   },
-  "sourceLanguage": {
-    "S": "en-US"
+  sourceLanguage: {
+    S: "en-US",
   },
-  "sourceLanguageCode": {
-    "S": "en"
+  sourceLanguageCode: {
+    S: "en",
   },
-  "sourceLanguageFriendly": {
-    "S": "English - United States"
+  sourceLanguageFriendly: {
+    S: "English - United States",
   },
-  "sourceTranscriptionProvider": {
-    "S": "Deepgram"
+  sourceTranscriptionProvider: {
+    S: "Deepgram",
   },
-  "sourceTtsProvider": {
-    "S": "Amazon"
+  sourceTtsProvider: {
+    S: "Amazon",
   },
-  "sourceVoice": {
-    "S": "Matthew-Generative"
-  }
+  sourceVoice: {
+    S: "Matthew-Generative",
+  },
 };
 
 console.log(JSON.stringify(userProfile));

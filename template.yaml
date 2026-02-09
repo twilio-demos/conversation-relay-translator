@@ -2,6 +2,22 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Single stack to build a Restaurant Ordering Voice AI application leveraging Twilio ConversationRelay and AWS Bedrock.
 
+Parameters:
+  TwilioAccountSid:
+    Type: String
+    Description: Twilio Account SID
+    NoEcho: true
+  TwilioAuthToken:
+    Type: String
+    Description: Twilio Auth Token
+    NoEcho: true
+  AgentPhoneNumber:
+    Type: String
+    Description: Agent Phone Number
+  DefaultPhoneNumber:
+    Type: String
+    Description: Default Phone Number
+
 Globals:
   Function:
     Timeout: 5
@@ -9,6 +25,7 @@ Globals:
     Layers:
       - !Sub "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:20"
       # https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-SAM-CLI.html
+
 Resources:
   ########################################
   # DynamoDB used to save state for each
@@ -177,10 +194,10 @@ Resources:
           TABLE_NAME: !Ref PrimaryDynamoDBTable          
           WS_URL: !Join [ '', [ 'wss://', !Ref CRWebSocketApi, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]
           # DO NOT STORE VALUES LIKE THIS IN CODE!...             
-          TWILIO_ACCOUNT_SID: "YOUR-TWILIO-ACCOUNT-SID"
-          TWILIO_AUTH_TOKEN: "YOUR-TWILIO-AUTH-TOKEN"          
-          AGENT_PHONE_NUMBER: "<ENTER-A-DEFAULT-TWILIO-NUMBER>"
-          TWILIO_DEFAULT_FROM: "ENTER-YOUR-DEFAULT-TWILIO-NUMBER"          
+          TWILIO_ACCOUNT_SID: !Ref TwilioAccountSid
+          TWILIO_AUTH_TOKEN: !Ref TwilioAuthToken
+          AGENT_PHONE_NUMBER: !Ref AgentPhoneNumber
+          TWILIO_DEFAULT_FROM: !Ref DefaultPhoneNumber
           # INSTEAD, Use a secure method for production such as 
           # pulling from the AWS Parameter Store or Secrets Manager.
           # Use AWS Secrets Manager (or similar) to store these
@@ -345,8 +362,8 @@ Resources:
         Variables:          
           TABLE_NAME: !Ref PrimaryDynamoDBTable
           # DO NOT STORE VALUES LIKE THIS IN CODE!...
-          TWILIO_ACCOUNT_SID: "YOUR-TWILIO-ACCOUNT-SID"
-          TWILIO_AUTH_TOKEN: "YOUR-TWILIO-AUTH-TOKEN"
+          TWILIO_ACCOUNT_SID: !Ref TwilioAccountSid
+          TWILIO_AUTH_TOKEN: !Ref TwilioAuthToken
           # INSTEAD, Use a secure method for production such as
           # Use a secure method for production such as 
           # pulling from the AWS Parameter Store or Secrets Manager.
