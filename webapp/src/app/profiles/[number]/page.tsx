@@ -2,6 +2,8 @@ import ClientProfilePage from "@/app/components/pages/profile";
 import { getProfile } from "@/lib/dynamodb";
 import { notFound } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export type ProfilePageParams = {
   params: { number: string };
 };
