@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
+import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "ConversationRelay Translator",
@@ -15,10 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
-        <main className="container mx-auto px-4 py-8">
-          {children}
-        </main>
+        <Providers>
+          <Navigation />
+          <main className="container mx-auto px-4 py-8">{children}</main>
+        </Providers>
       </body>
     </html>
   );

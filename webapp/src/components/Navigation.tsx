@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export function Navigation() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const links = [
     { href: "/", label: "Home" },
@@ -18,11 +20,12 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link
             href="/"
-            className="text-xl font-bold text-gray-900 dark:text-white">
+            className="text-xl font-bold text-gray-900 dark:text-white"
+          >
             CR Translator
           </Link>
 
-          <div className="flex space-x-4">
+          <div className="flex items-center space-x-4">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -33,11 +36,33 @@ export function Navigation() {
                     isActive
                       ? "bg-gray-900 text-white dark:bg-gray-700"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}>
+                  }`}
+                >
                   {link.label}
                 </Link>
               );
             })}
+
+            {session ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {session.user?.email}
+                </span>
+                <button
+                  onClick={() => signOut()}
+                  className="px-3 py-2 rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => signIn("google")}
+                className="px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </div>
