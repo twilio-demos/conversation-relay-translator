@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { ProfileForm } from "@/components/ProfileForm";
+import { UserProfile } from "@/types/profile";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserProfile } from "@/types/profile";
-import { ProfileForm } from "@/components/ProfileForm";
+import { useState } from "react";
 
 export type ClientProfilePageProps = {
   profile: UserProfile;
 };
 
-export default function ClientProfilePage({
-  profile,
-}: ClientProfilePageProps) {
+export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -36,7 +34,9 @@ export default function ClientProfilePage({
   };
 
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${profile.name}'s profile?`)) {
+    if (
+      !confirm(`Are you sure you want to delete ${profile.name}'s profile?`)
+    ) {
       return;
     }
 
@@ -153,7 +153,7 @@ export default function ClientProfilePage({
       </div>
 
       {/* Callee Settings */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 mb-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
           Callee Settings
         </h2>
@@ -200,6 +200,39 @@ export default function ClientProfilePage({
             </p>
             <p className="text-base font-medium text-gray-900 dark:text-white mt-1">
               {profile.calleeTtsProvider}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Flex Settings */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          Flex Settings
+        </h2>
+        <div className="mb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Flex Enabled
+          </p>
+          <p className="text-base font-medium text-gray-900 dark:text-white mt-1">
+            {profile.useFlex ? "Enabled" : "Disabled"}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Flex Number
+            </p>
+            <p className="text-base font-medium text-gray-900 dark:text-white mt-1">
+              {profile.flexNumber || "Not set"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Flex Worker Handle
+            </p>
+            <p className="text-base font-medium text-gray-900 dark:text-white mt-1">
+              {profile.flexWorkerHandle || "Not set"}
             </p>
           </div>
         </div>

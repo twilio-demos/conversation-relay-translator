@@ -17,6 +17,9 @@ Parameters:
   DefaultPhoneNumber:
     Type: String
     Description: Default Phone Number
+  FlexNumber:
+    Type: String
+    Description: Flex Number
 
 Globals:
   Function:
@@ -198,6 +201,7 @@ Resources:
           TWILIO_AUTH_TOKEN: !Ref TwilioAuthToken
           AGENT_PHONE_NUMBER: !Ref AgentPhoneNumber
           TWILIO_DEFAULT_FROM: !Ref DefaultPhoneNumber
+          FLEX_NUMBER: !Ref FlexNumber
           # INSTEAD, Use a secure method for production such as 
           # pulling from the AWS Parameter Store or Secrets Manager.
           # Use AWS Secrets Manager (or similar) to store these
@@ -502,7 +506,35 @@ Resources:
             Path: /initiate-translation-session
             Method: post
             ApiId: !Ref TwimlAPI
-            
+
+  ######################################################
+  # GetActiveConversationFunction =>
+  # Retrieves active conversation for a worker
+  ######################################################
+  GetActiveConversationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-GetActiveConversationFunction"
+      Description: "Get active conversation by worker handle"
+      CodeUri: lambdas/api/
+      Handler: get-active-conversation.lambdaHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref PrimaryDynamoDBTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PrimaryDynamoDBTable
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref TwimlAPI
+            Path: /active-conversation
+            Method: GET
+
 ##########################################################################
 #   Outputs
 ##########################################################################

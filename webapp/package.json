@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.696.0",
     "@aws-sdk/lib-dynamodb": "^3.696.0",
+    "@chatscope/chat-ui-kit-react": "^2.1.1",
     "@vercel/oidc-aws-credentials-provider": "^3.0.6",
     "next": "16.1.0",
     "react": "^19.0.0",

@@ -1,6 +1,5 @@
-import { UserProfile } from "@/types/profile";
+import { ConversationMessage, Session, UserProfile } from "@/types/profile";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { awsCredentialsProvider } from '@vercel/oidc-aws-credentials-provider';
 import {
   DeleteCommand,
   DynamoDBDocumentClient,
@@ -8,10 +7,17 @@ import {
   PutCommand,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
 
 const client = new DynamoDBClient({
   region: process.env.AWS_REGION || "us-east-1",
-  ...(process.env.AWS_ROLE_ARN ? { credentials: awsCredentialsProvider({ roleArn: process.env.AWS_ROLE_ARN }) } : {})
+  ...(process.env.AWS_ROLE_ARN
+    ? {
+        credentials: awsCredentialsProvider({
+          roleArn: process.env.AWS_ROLE_ARN,
+        }),
+      }
+    : {}),
 });
 
 const docClient = DynamoDBDocumentClient.from(client);
@@ -39,6 +45,9 @@ export function profileToDynamoDB(profile: UserProfile): any {
     sourceTranscriptionProvider: profile.sourceTranscriptionProvider,
     sourceTtsProvider: profile.sourceTtsProvider,
     sourceVoice: profile.sourceVoice,
+    useFlex: profile.useFlex,
+    flexNumber: profile.flexNumber,
+    flexWorkerHandle: profile.flexWorkerHandle,
   };
 }
 
@@ -61,6 +70,54 @@ export function dynamoDBToProfile(item: any): UserProfile {
     sourceTranscriptionProvider: item.sourceTranscriptionProvider,
     sourceTtsProvider: item.sourceTtsProvider,
     sourceVoice: item.sourceVoice,
+    flexNumber: item.flexNumber,
+    useFlex: item.useFlex,
+    flexWorkerHandle: item.flexWorkerHandle,
+  };
+}
+
+// Convert DynamoDB format to Session
+export function dynamoDBToSession(item: any): Session {
+  return {
+    connectionId: item.pk,
+    callSid: item.callSid,
+    name: item.name,
+    phoneNumber: item.pk,
+    calleeNumber: item.calleeNumber,
+    sourceLanguage: item.sourceLanguage,
+    sourceLanguageCode: item.sourceLanguageCode,
+    sourceLanguageFriendly: item.sourceLanguageFriendly,
+    sourceTranscriptionProvider: item.sourceTranscriptionProvider,
+    sourceTtsProvider: item.sourceTtsProvider,
+    sourceVoice: item.sourceVoice,
+    calleeDetails: item.calleeDetails,
+    calleeLanguage: item.calleeLanguage,
+    calleeLanguageCode: item.calleeLanguageCode,
+    calleeLanguageFriendly: item.calleeLanguageFriendly,
+    calleeTranscriptionProvider: item.calleeTranscriptionProvider,
+    calleeTtsProvider: item.calleeTtsProvider,
+    calleeVoice: item.calleeVoice,
+    callStatus: item.callStatus,
+    direction: item.direction,
+    whichParty: item.whichParty,
+    parentConnectionId: item.parentConnectionId,
+    translationActive: item.translationActive,
+    targetConnectionId: item.targetConnectionId,
+    expireAt: item.expireAt,
+  };
+}
+
+// Convert DynamoDB format to ConversationMessage
+export function dynamoDBToConversationMessage(item: any): ConversationMessage {
+  return {
+    conversationId: item.pk,
+    timestamp: item.chat.ts,
+    whichParty: item.chat.whichParty,
+    partyConnectionId: item.chat.partyConnectionId,
+    original: item.chat.original,
+    originalLanguageCode: item.chat.originalLanguageCode,
+    translated: item.chat.translated,
+    translatedLanguageCode: item.chat.translatedLanguageCode,
   };
 }
 
@@ -105,6 +162,60 @@ export async function listProfiles(): Promise<UserProfile[]> {
 
   const response = await docClient.send(command);
   return response.Items ? response.Items.map(dynamoDBToProfile) : [];
+}
+
+// List all sessions
+export async function listSessions(): Promise<Session[]> {
+  const command = new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: "index-1-full",
+    KeyConditionExpression: "pk1 = :pk1",
+    ExpressionAttributeValues: {
+      ":pk1": "connection",
+    },
+  });
+
+  const response = await docClient.send(command);
+  return response.Items
+    ? response.Items.filter((s) => s.calleeLanguageFriendly).map(
+        dynamoDBToSession
+      )
+    : [];
+}
+
+// Get session by ID
+export async function getSession(sessionId: string): Promise<Session | null> {
+  const command = new GetCommand({
+    TableName: TABLE_NAME,
+    Key: {
+      pk: sessionId,
+      sk: "connection",
+    },
+  });
+
+  const response = await docClient.send(command);
+  return response.Item ? dynamoDBToSession(response.Item) : null;
+}
+
+// Get conversation messages by conversation ID
+export async function getConversation(
+  conversationId: string
+): Promise<ConversationMessage[]> {
+  const command = new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: "index-1-full",
+    KeyConditionExpression: "pk1 = :pk1 AND begins_with(sk1, :conversationId)",
+    ExpressionAttributeValues: {
+      ":pk1": "spokenText",
+      ":conversationId": conversationId,
+    },
+    ScanIndexForward: true,
+  });
+
+  const response = await docClient.send(command);
+  return response.Items
+    ? response.Items.map(dynamoDBToConversationMessage)
+    : [];
 }
 
 // Delete a profile

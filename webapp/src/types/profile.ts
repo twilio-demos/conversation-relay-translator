@@ -19,6 +19,11 @@ export interface UserProfile {
   calleeTranscriptionProvider: "Deepgram" | "Google";
   calleeTtsProvider: "Amazon" | "Google";
   calleeVoice: string;
+
+  // Flex Settings
+  useFlex: boolean;
+  flexNumber: string;
+  flexWorkerHandle: string;
 }
 
 export interface DynamoDBProfile {
@@ -56,8 +61,59 @@ export const LANGUAGES = [
 ];
 
 export const VOICES = {
-  en: ["Matthew-Generative", "Joanna-Generative", "Kevin-Generative", "Salli-Generative"],
+  en: [
+    "Matthew-Generative",
+    "Joanna-Generative",
+    "Kevin-Generative",
+    "Salli-Generative",
+  ],
   es: ["Lupe-Generative", "Pedro-Generative", "Mia-Generative"],
   fr: ["Lea-Generative", "Remi-Generative"],
   de: ["Vicki-Generative", "Daniel-Generative"],
 };
+
+export interface Session {
+  connectionId: string;
+  callSid?: string;
+  name?: string;
+  phoneNumber: string;
+  calleeNumber?: string;
+
+  // Source (Caller) Settings
+  sourceLanguage?: string;
+  sourceLanguageCode?: string;
+  sourceLanguageFriendly?: string;
+  sourceTranscriptionProvider?: "Deepgram" | "Google";
+  sourceTtsProvider?: "Amazon" | "Google";
+  sourceVoice?: string;
+
+  // Callee Settings
+  calleeDetails?: boolean | string;
+  calleeLanguage?: string;
+  calleeLanguageCode?: string;
+  calleeLanguageFriendly?: string;
+  calleeTranscriptionProvider?: "Deepgram" | "Google";
+  calleeTtsProvider?: "Amazon" | "Google";
+  calleeVoice?: string;
+
+  // Session metadata
+  callStatus?: string;
+  direction?: string;
+  whichParty?: "caller" | "callee";
+  parentConnectionId?: string;
+  translationActive?: boolean;
+  targetConnectionId?: string;
+  createdAt?: number;
+  expireAt?: number;
+}
+
+export interface ConversationMessage {
+  conversationId: string;
+  timestamp: number;
+  whichParty: "caller" | "callee";
+  partyConnectionId: string;
+  original: string;
+  originalLanguageCode: string;
+  translated: string;
+  translatedLanguageCode: string;
+}
