@@ -27,7 +27,7 @@ Your profile has several configurable options for both the **Caller** (you) and 
 - **TTS Provider**: Provider used for text-to-speech to them (Amazon or Google)
 - **Phone Number**: The phone number of the person to call
 
-### Flex Settings
+#### Flex Settings
 
 Using Flex will bypass the **Callee** number and instead send it to Flex using the Studio Flow workflow below.
 
