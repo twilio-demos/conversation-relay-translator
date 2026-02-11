@@ -48,16 +48,16 @@ This will walk you through a short guide on how to deploy the CloudFormation sta
 - Flex workflow and Queue (optional)
 - Another Twilio phone number (optional, if using Flex)
 
-### Sam Configuration
-
-Ensure that you have the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) installed before doing this
-
-Install dependencies
+### Install dependencies
 
 ```bash
 npm --prefix ./layers/layer-cr-twilio-client/nodejs install
 npm --prefix ./lambdas/api install
 ```
+
+### Sam Configuration
+
+Ensure that you have the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) installed before doing this
 
 Copy the AWS profile sample file and enter your AWS profile name into it
 
