@@ -27,6 +27,14 @@ Your profile has several configurable options for both the **Caller** (you) and 
 - **TTS Provider**: Provider used for text-to-speech to them (Amazon or Google)
 - **Phone Number**: The phone number of the person to call
 
+### Flex Settings
+
+Using Flex will bypass the **Callee** number and instead send it to Flex using the Studio Flow workflow below.
+
+- **Use Flex**: Enable or disable the use of Flex
+- **Flex Number**: The number that is connected to your Studio Flow workflow
+- **Flex Worker Handle**: The handle of the worker who will pickup the Flex call
+
 ## Deploy Yourself
 
 This will walk you through a short guide on how to deploy the CloudFormation stack needed in this application
