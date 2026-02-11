@@ -33,7 +33,7 @@ export const Conversation = ({ serverConversation }: ConversationProps) => {
 
   // Auto-scroll to bottom when conversation updates
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && isPolling) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [conversation]);
