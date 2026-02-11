@@ -20,6 +20,7 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
+        // @ts-expect-error id does exist
         session.user.id = token.id as string;
       }
       return session;
