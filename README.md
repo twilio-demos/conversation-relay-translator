@@ -44,10 +44,10 @@ version = 0.1
 stack_name = "<name>"
 region = "<region>"
 parameter_overrides = [
-    "TwilioAccountSid=<account_sid>"
-    "TwilioAuthToken=<auth_token>"
-    "AgentPhoneNumber=<number>" # optional default value
-    "DefaultPhoneNumber=<number>" # optional default value
+    "TwilioAccountSid=<account_sid>",
+    "TwilioAuthToken=<auth_token>",
+    "AgentPhoneNumber=<number>", # optional default value
+    "DefaultPhoneNumber=<number>", # optional default value
     "FlexNumber=<number" # optional default value
 ]
 ```
