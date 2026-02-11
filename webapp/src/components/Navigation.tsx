@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -34,7 +34,7 @@ export function Navigation() {
               return (
                 <Button
                   key={link.href}
-                  variant={isActive ? "default" : "ghost"}
+                  variant={isActive ? "underline" : "ghost"}
                   size="sm"
                   asChild>
                   <Link href={link.href} target={link.target}>
@@ -57,7 +57,10 @@ export function Navigation() {
                 </Button>
               </div>
             ) : (
-              <Button onClick={() => signIn("google")} size="sm" className="ml-4">
+              <Button
+                onClick={() => signIn("google")}
+                size="sm"
+                className="ml-4">
                 Sign In
               </Button>
             )}
