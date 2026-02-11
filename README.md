@@ -68,7 +68,7 @@ Build your SAM template and deploy it
 sam build && sam deploy --capabilities CAPABILITY_NAMED_IAM --s3-bucket <your_bucket_name>
 ```
 
-This will output some text that you will need to setup the POST method for your phone number. **This is the phone number you will be calling into**.
+This will output the TwiML Serverless HTTP API that you will need to setup the POST method for your phone number. **This is the phone number you will be calling into**.
 
 ![setup phone](/docs/images/phone-setup-post.png)
 
