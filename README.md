@@ -56,6 +56,7 @@ Install dependencies
 
 ```bash
 npm --prefix ./layers/layer-cr-twilio-client/nodejs install
+npm --prefix ./lambdas/api install
 ```
 
 Copy the AWS profile sample file and enter your AWS profile name into it
