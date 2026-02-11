@@ -144,6 +144,10 @@ Below is the example JSON for the Studio Flow.
 }
 ```
 
+Your Studio Flow should look like:
+
+![flow](docs/images/flow-setup.png)
+
 Next, connect the `send_to_flex` trigger to your desired Workflow. In order for this to work, you must connect a phone number from inside Studio Flow to this flow.
 
 ![Connect Workflow to Flow](/docs/images/flow-config-workflow.png)
