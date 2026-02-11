@@ -44,25 +44,27 @@ export function Navigation() {
               );
             })}
 
-            {session ? (
-              <div className="flex items-center space-x-3 ml-4">
-                <span className="text-sm text-muted-foreground">
-                  {session.user?.email}
-                </span>
+            {process.env.NEXT_PUBLIC_LOCAL !== "true" && (
+              session ? (
+                <div className="flex items-center space-x-3 ml-4">
+                  <span className="text-sm text-muted-foreground">
+                    {session.user?.email}
+                  </span>
+                  <Button
+                    onClick={() => signOut()}
+                    variant="destructive"
+                    size="sm">
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
                 <Button
-                  onClick={() => signOut()}
-                  variant="destructive"
-                  size="sm">
-                  Sign Out
+                  onClick={() => signIn("google")}
+                  size="sm"
+                  className="ml-4">
+                  Sign In
                 </Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => signIn("google")}
-                size="sm"
-                className="ml-4">
-                Sign In
-              </Button>
+              )
             )}
           </div>
         </div>
