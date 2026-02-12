@@ -4,6 +4,8 @@ ConversationRelay Translator is an app designed to allow two-way voice commmunic
 
 Visit this [link](https://www.twilio.com/en-us/blog/developers/tutorials/product/translation-with-conversationrelay) for a detailed overview of how it works
 
+![translator](/docs/images/translator.png)
+
 ## Usage Guide
 
 ### Setting Up Your Profile
