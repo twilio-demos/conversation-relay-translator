@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Providers } from "@/components/Providers";
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
 import { SegmentPageTracker } from "./components/segment/segment-page-tracker";
 import "./globals.css";
 
@@ -31,7 +32,9 @@ export default function RootLayout({
           }}
         />
         <Providers>
-          <SegmentPageTracker />
+          <Suspense fallback={null}>
+            <SegmentPageTracker />
+          </Suspense>
           <Navigation />
           <main className="container mx-auto px-4 py-8">{children}</main>
         </Providers>
