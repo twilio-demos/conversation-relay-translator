@@ -47,6 +47,7 @@ export const lambdaHandler = async (event, context) => {
        */
       agentContext = {
         name: snsPayload.calleeName,
+        calleeNumber: snsPayload.calleeNumber,
         sourceLanguageCode: snsPayload.calleeLanguageCode, // ("es-MX") What AWS Translate uses to translate
         sourceLanguage: snsPayload.calleeLanguage, // ("es-MX") What ConversationRelay uses
         sourceLanguageFriendly: snsPayload?.calleeLanguageFriendly, // ("es-MX") What ConversationRelay uses
@@ -95,10 +96,14 @@ export const lambdaHandler = async (event, context) => {
       ? agentContext?.flexNumber
       : process.env.FLEX_NUMBER;
 
+    // Convert useFlex to boolean (handles string 'false' or 'true')
+    const useFlexBoolean =
+      agentContext?.useFlex === true || agentContext?.useFlex === "true";
+
     // Use the agent phone number if it exists, otherwise use the default
     // If you are just trying things, out you can use the default number or "hardcoded" number
     // to go to a specific handset.
-    let calleeNumber = agentContext?.useFlex
+    let calleeNumber = useFlexBoolean
       ? flexNumber
       : agentContext?.calleeNumber
       ? agentContext.calleeNumber

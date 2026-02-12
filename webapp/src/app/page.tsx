@@ -1,5 +1,4 @@
-import { listProfiles, listSessions } from "@/lib/dynamodb";
-import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,8 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import { HeroBanner } from "@/components/HeroBanner";
+import { listProfiles, listSessions } from "@/lib/dynamodb";
+import Link from "next/link";
+
 
 export const dynamic = "force-dynamic";
 

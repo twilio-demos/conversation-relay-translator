@@ -1,15 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,15 +14,12 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="h-[calc(100vh-10rem)] flex items-center justify-center">
       <Card className="max-w-md w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl text-center">
             Sign in to your account
           </CardTitle>
-          <CardDescription className="text-center">
-            Translation Management System
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <Button
