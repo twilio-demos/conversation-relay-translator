@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { HeroBanner } from "@/components/HeroBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -23,14 +24,7 @@ export default async function Home() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-12">
-      <div>
-        <h1 className="text-4xl font-bold mb-2">
-          ConversationRelay Translator
-        </h1>
-        <p className="text-muted-foreground">
-          Manage translation profiles and view call sessions
-        </p>
-      </div>
+      <HeroBanner />
 
       <section>
         <div className="flex justify-between items-center mb-6">
