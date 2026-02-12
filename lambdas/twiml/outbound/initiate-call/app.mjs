@@ -17,6 +17,7 @@ import {
   GetCommand,
   PutCommand,
 } from "@aws-sdk/lib-dynamodb";
+import { Analytics } from "@segment/analytics-node";
 const dynClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddbDocClient = DynamoDBDocumentClient.from(dynClient);
 
@@ -27,6 +28,12 @@ const twilioClient = twilio(accountSid, authToken);
 
 // Helper functions from Lambda Layers
 import { invokeTranslate } from "/opt/invoke-translate.mjs";
+
+const analytics = new Analytics({
+  writeKey: process.env.SEGMENT_WRITE_KEY,
+  flushAt: 1,
+  flushInterval: 150,
+});
 
 export const lambdaHandler = async (event, context) => {
   let snsPayload = JSON.parse(event.Records[0].Sns.Message);
@@ -58,6 +65,7 @@ export const lambdaHandler = async (event, context) => {
         flexNumber: snsPayload.flexNumber,
         useExternalFlex: snsPayload.useExternalFlex,
         externalFlexNumber: snsPayload.externalFlexNumber,
+        creator: snsPayload.creator,
       };
 
       if (snsPayload?.calleeNumber !== undefined) {
@@ -244,6 +252,23 @@ export const lambdaHandler = async (event, context) => {
         Item: proxyItem,
       })
     );
+
+    try {
+      console.log("Sending Segment event for user:", customParams.creator);
+      await analytics.track({
+        event: "Outbound Call Placed",
+        userId: customParams.creator,
+        properties: {
+          callSid: callResponse.CallSid,
+          ...customParams,
+        },
+      });
+
+      await analytics.flush();
+      console.log("Segment event sent successfully");
+    } catch (segmentError) {
+      console.error("Segment tracking error:", segmentError);
+    }
 
     return true;
   } catch (error) {

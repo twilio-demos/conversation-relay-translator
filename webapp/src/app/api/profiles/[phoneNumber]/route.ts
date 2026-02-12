@@ -1,6 +1,11 @@
 import { deleteProfile, getProfile, putProfile } from "@/lib/dynamodb";
 import { UserProfile } from "@/types/profile";
+import Analytics from "@segment/analytics-node";
 import { NextRequest, NextResponse } from "next/server";
+
+const analytics = new Analytics({
+  writeKey: process.env.SEGMENT_WRITE_KEY || "",
+});
 
 // GET /api/profiles/[phoneNumber] - Get a specific profile
 export async function GET(
@@ -45,6 +50,14 @@ export async function PUT(
     }
 
     await putProfile(profile);
+
+    await analytics.track({
+      event: "Profile Updated",
+      properties: profile,
+      userId: profile.creator,
+      anonymousId: "",
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating profile:", error);

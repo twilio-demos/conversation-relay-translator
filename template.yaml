@@ -20,6 +20,9 @@ Parameters:
   FlexNumber:
     Type: String
     Description: Flex Number
+  SegmentWriteKey:
+    Type: String
+    Description: Segment Write Key
 
 Globals:
   Function:
@@ -113,6 +116,21 @@ Resources:
 
   ########################################
   # Lambda Layer available to all lambdas
+  # This layer allows lambda to use Segment SDK
+  ########################################
+  ConversationRelaySegmentLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-ConversationRelaySegmentLayer"
+      Description: Allows lambda to use Segment SDK
+      ContentUri: layers/layer-cr-segment/
+      CompatibleRuntimes:
+        - nodejs20.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+  ########################################
+  # Lambda Layer available to all lambdas
   # This layer handles posting Websocket
   # messages back to API Gateway.
   ########################################
@@ -192,6 +210,7 @@ Resources:
       Layers: 
         - !Ref ConversationRelayTwilioClientLayer
         - !Ref ConversationRelayInvokeTranslateLayer        
+        - !Ref ConversationRelaySegmentLayer
       Environment:
         Variables:          
           TABLE_NAME: !Ref PrimaryDynamoDBTable          
@@ -202,6 +221,7 @@ Resources:
           AGENT_PHONE_NUMBER: !Ref AgentPhoneNumber
           TWILIO_DEFAULT_FROM: !Ref DefaultPhoneNumber
           FLEX_NUMBER: !Ref FlexNumber
+          SEGMENT_WRITE_KEY: !Ref SegmentWriteKey
           # INSTEAD, Use a secure method for production such as 
           # pulling from the AWS Parameter Store or Secrets Manager.
           # Use AWS Secrets Manager (or similar) to store these
@@ -297,11 +317,13 @@ Resources:
         - !Ref ConversationRelayDynamoDBUtilLayer
         - !Ref ConversationRelayInvokeTranslateLayer
         - !Ref ConversationRelayReplyToWSLayer
+        - !Ref ConversationRelaySegmentLayer
       Environment:
         Variables:          
           TABLE_NAME: !Ref PrimaryDynamoDBTable
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
           TWILIO_INITIATE_CALL_TOPIC: !Ref TwilioInitiateCallTopic
+          SEGMENT_WRITE_KEY: !Ref SegmentWriteKey
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PrimaryDynamoDBTable
@@ -486,12 +508,14 @@ Resources:
       Runtime: nodejs20.x
       Architectures:
         - arm64
-      Layers: 
-        - !Ref ConversationRelayInvokeTranslateLayer      
+      Layers:
+        - !Ref ConversationRelayInvokeTranslateLayer
+        - !Ref ConversationRelaySegmentLayer      
       Environment:
         Variables:
           WS_URL: !Join [ '', [ 'wss://', !Ref CRWebSocketApi, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]
           TABLE_NAME: !Ref PrimaryDynamoDBTable
+          SEGMENT_WRITE_KEY: !Ref SegmentWriteKey
       Policies:        
         - DynamoDBCrudPolicy:
             TableName: !Ref PrimaryDynamoDBTable

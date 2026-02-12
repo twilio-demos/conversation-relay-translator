@@ -1,5 +1,10 @@
+import { Analytics } from "@segment/analytics-node";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+
+const analytics = new Analytics({
+  writeKey: process.env.SEGMENT_WRITE_KEY || "",
+});
 
 const handler = NextAuth({
   providers: [
@@ -12,6 +17,25 @@ const handler = NextAuth({
     signIn: "/auth/signin",
   },
   callbacks: {
+    async signIn({ user }) {
+      if (user.email) {
+        try {
+          analytics.identify({
+            userId: user.email,
+            traits: {
+              email: user.email,
+              name: user.name,
+              avatar: user.image,
+            },
+          });
+          await analytics.flush();
+          console.log("Segment identify call sent for:", user.email);
+        } catch (error) {
+          console.error("Failed to send Segment identify:", error);
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
