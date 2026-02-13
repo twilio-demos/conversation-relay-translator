@@ -297,7 +297,7 @@ export function ProfileForm({
             </div>
           </div>
           {values.calleeTtsProvider === "ElevenLabs" && (
-            <div className="mt-6 pt-6 border-t px-6">
+            <div className="mt-6 pt-6 border-t">
               <CardTitle className="text-md">ElevenLabs Settings</CardTitle>
               <FormikInput
                 label="Voice Hash"
