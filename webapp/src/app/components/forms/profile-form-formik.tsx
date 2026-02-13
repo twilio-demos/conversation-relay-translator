@@ -1,6 +1,12 @@
 "use client";
 
-import { LANGUAGES, UserProfile, VOICES } from "@/types/profile";
+import {
+  AMAZON_VOICES,
+  ELEVEN_LABS_VOICES,
+  GOOGLE_VOICES,
+  LANGUAGES,
+  UserProfile,
+} from "@/types/profile";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { ProfileForm } from "./profile-form";
@@ -158,12 +164,25 @@ export function ProfileFormFormik({
           type: "source" | "callee",
           languageCode: string
         ) => {
+          const provider =
+            type === "source"
+              ? values.sourceTtsProvider
+              : values.calleeTtsProvider;
+
           const language = LANGUAGES.find((l) => l.code === languageCode);
           if (!language) return;
 
           // Get the first available voice for the new language
+          const voices =
+            provider === "ElevenLabs"
+              ? ELEVEN_LABS_VOICES
+              : provider === "Amazon"
+              ? AMAZON_VOICES
+              : GOOGLE_VOICES;
+
           const availableVoices =
-            VOICES[language.translateCode as keyof typeof VOICES];
+            voices[language.translateCode as keyof typeof voices];
+
           const defaultVoice = availableVoices?.[0] || "";
 
           // Update all fields

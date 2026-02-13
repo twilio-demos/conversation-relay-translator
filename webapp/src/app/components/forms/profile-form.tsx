@@ -10,7 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LANGUAGES, UserProfile, VOICES } from "@/types/profile";
+import {
+  AMAZON_VOICES,
+  ELEVEN_LABS_VOICES,
+  ELEVEN_LABS_VOICES_TO_FRIENDLY,
+  getGoogleVoiceFriendlyName,
+  GOOGLE_VOICES,
+  LANGUAGES,
+  UserProfile,
+} from "@/types/profile";
 import { FormikCheckbox } from "../formik/formik-checkbox";
 import { FormikInput } from "../formik/formik-input";
 
@@ -31,9 +39,27 @@ export function ProfileForm({
   onSubmit,
   onCancel,
 }: ProfileFormProps) {
+  const callerVoices =
+    values.sourceTtsProvider === "ElevenLabs"
+      ? ELEVEN_LABS_VOICES
+      : values.sourceTtsProvider === "Amazon"
+      ? AMAZON_VOICES
+      : GOOGLE_VOICES;
+  const calleeVoices =
+    values.calleeTtsProvider === "ElevenLabs"
+      ? ELEVEN_LABS_VOICES
+      : values.calleeTtsProvider === "Amazon"
+      ? AMAZON_VOICES
+      : GOOGLE_VOICES;
+
+  const filteredLanguagesForCaller = LANGUAGES.filter(
+    (lang) => values.sourceTtsProvider !== "Google" || lang.code !== "es-MX"
+  );
+  const filteredLanguagesForCallee = LANGUAGES.filter(
+    (lang) => values.calleeTtsProvider !== "Google" || lang.code !== "es-MX"
+  );
   return (
     <form onSubmit={onSubmit} className="space-y-8" noValidate>
-      {/* Basic Info */}
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
@@ -52,7 +78,6 @@ export function ProfileForm({
         </CardContent>
       </Card>
 
-      {/* Caller Settings */}
       <Card>
         <CardHeader>
           <CardTitle>
@@ -75,7 +100,7 @@ export function ProfileForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {LANGUAGES.map((lang) => (
+                  {filteredLanguagesForCaller.map((lang) => (
                     <SelectItem key={lang.code} value={lang.code}>
                       {lang.friendly}
                     </SelectItem>
@@ -92,11 +117,19 @@ export function ProfileForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {VOICES[
-                    values.sourceLanguageCode as keyof typeof VOICES
-                  ]?.map((voice) => (
+                  {(
+                    callerVoices[
+                      values.sourceLanguageCode as keyof typeof callerVoices
+                    ] as string[] | undefined
+                  )?.map((voice) => (
                     <SelectItem key={voice} value={voice}>
-                      {voice}
+                      {values.sourceTtsProvider === "ElevenLabs"
+                        ? ELEVEN_LABS_VOICES_TO_FRIENDLY[
+                            voice as keyof typeof ELEVEN_LABS_VOICES_TO_FRIENDLY
+                          ] || voice
+                        : values.sourceTtsProvider === "Google"
+                        ? getGoogleVoiceFriendlyName(voice)
+                        : voice}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -133,6 +166,7 @@ export function ProfileForm({
                 <SelectContent>
                   <SelectItem value="Amazon">Amazon</SelectItem>
                   <SelectItem value="Google">Google</SelectItem>
+                  <SelectItem value="ElevenLabs">ElevenLabs</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -140,7 +174,6 @@ export function ProfileForm({
         </CardContent>
       </Card>
 
-      {/* Callee Settings */}
       <Card>
         <CardHeader>
           <CardTitle>
@@ -183,7 +216,7 @@ export function ProfileForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {LANGUAGES.map((lang) => (
+                  {filteredLanguagesForCallee.map((lang) => (
                     <SelectItem key={lang.code} value={lang.code}>
                       {lang.friendly}
                     </SelectItem>
@@ -200,11 +233,19 @@ export function ProfileForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {VOICES[
-                    values.calleeLanguageCode as keyof typeof VOICES
-                  ]?.map((voice) => (
+                  {(
+                    calleeVoices[
+                      values.calleeLanguageCode as keyof typeof calleeVoices
+                    ] as string[] | undefined
+                  )?.map((voice) => (
                     <SelectItem key={voice} value={voice}>
-                      {voice}
+                      {values.calleeTtsProvider === "ElevenLabs"
+                        ? ELEVEN_LABS_VOICES_TO_FRIENDLY[
+                            voice as keyof typeof ELEVEN_LABS_VOICES_TO_FRIENDLY
+                          ] || voice
+                        : values.calleeTtsProvider === "Google"
+                        ? getGoogleVoiceFriendlyName(voice)
+                        : voice}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -241,13 +282,13 @@ export function ProfileForm({
                 <SelectContent>
                   <SelectItem value="Amazon">Amazon</SelectItem>
                   <SelectItem value="Google">Google</SelectItem>
+                  <SelectItem value="ElevenLabs">ElevenLabs</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </CardContent>
 
-        {/* Flex Settings - Subsection within Callee Settings */}
         <div className="px-6 pb-6">
           <div className="mb-4 border-t pt-6">
             <h3 className="text-lg font-semibold mb-4">Flex Settings</h3>

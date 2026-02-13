@@ -4,7 +4,11 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserProfile } from "@/types/profile";
+import {
+  ELEVEN_LABS_VOICES_TO_FRIENDLY,
+  getGoogleVoiceFriendlyName,
+  UserProfile,
+} from "@/types/profile";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -58,6 +62,20 @@ export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
     } catch (error) {
       alert("Failed to delete profile. Please try again.");
       setIsDeleting(false);
+    }
+  };
+
+  const getVoice = (
+    provider: "Google" | "Amazon" | "ElevenLabs",
+    voice: string
+  ) => {
+    switch (provider) {
+      case "Google":
+        return getGoogleVoiceFriendlyName(voice);
+      case "Amazon":
+        return voice;
+      case "ElevenLabs":
+        return ELEVEN_LABS_VOICES_TO_FRIENDLY[voice] as string;
     }
   };
 
@@ -124,7 +142,7 @@ export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
             <div>
               <p className="text-sm text-muted-foreground">Voice</p>
               <p className="text-base font-medium mt-1">
-                {profile.sourceVoice}
+                {getVoice(profile.sourceTtsProvider, profile.sourceVoice)}
               </p>
             </div>
             <div>
@@ -184,7 +202,7 @@ export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
             <div>
               <p className="text-sm text-muted-foreground">Voice</p>
               <p className="text-base font-medium mt-1">
-                {profile.calleeVoice}
+                {getVoice(profile.calleeTtsProvider, profile.calleeVoice)}
               </p>
             </div>
             <div>
