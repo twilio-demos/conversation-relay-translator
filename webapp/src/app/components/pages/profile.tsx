@@ -4,85 +4,18 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ELEVEN_LABS_VOICES_TO_FRIENDLY,
-  getGoogleVoiceFriendlyName,
-  UserProfile,
-} from "@/types/profile";
+import { useProfile } from "@/hooks/use-profile";
+import { LanguageService } from "@/lib/services/language";
+import { UserProfile } from "@/types/profile";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export type ClientProfilePageProps = {
   profile: UserProfile;
 };
 
 export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
-
-  const handleUpdate = async (updatedProfile: UserProfile) => {
-    try {
-      const response = await fetch(
-        `/api/profiles/${encodeURIComponent(profile.phoneNumber)}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedProfile),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      setIsEditing(false);
-      router.refresh();
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
-    }
-  };
-
-  const handleDelete = async () => {
-    if (
-      !confirm(`Are you sure you want to delete ${profile.name}'s profile?`)
-    ) {
-      return;
-    }
-
-    setIsDeleting(true);
-    try {
-      const response = await fetch(
-        `/api/profiles/${encodeURIComponent(profile.phoneNumber)}`,
-        { method: "DELETE" }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete profile");
-      }
-
-      router.push("/profiles");
-    } catch (error) {
-      alert("Failed to delete profile. Please try again.");
-      setIsDeleting(false);
-    }
-  };
-
-  const getVoice = (
-    provider: "Google" | "Amazon" | "ElevenLabs",
-    voice: string
-  ) => {
-    switch (provider) {
-      case "Google":
-        return getGoogleVoiceFriendlyName(voice);
-      case "Amazon":
-        return voice;
-      case "ElevenLabs":
-        return ELEVEN_LABS_VOICES_TO_FRIENDLY[voice] as string;
-    }
-  };
+  const { isEditing, setIsEditing, isDeleting, handleUpdate, handleDelete } =
+    useProfile(profile);
 
   if (isEditing) {
     return (
@@ -150,7 +83,10 @@ export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
                 {profile.sourceTtsProvider === "ElevenLabs" &&
                 profile.customSourceHash
                   ? "Using Custom Hash"
-                  : getVoice(profile.sourceTtsProvider, profile.sourceVoice)}
+                  : LanguageService.getVoice(
+                      profile.sourceTtsProvider,
+                      profile.sourceVoice
+                    )}
               </p>
             </div>
             {profile.sourceTtsProvider === "ElevenLabs" &&
@@ -224,7 +160,10 @@ export default function ClientProfilePage({ profile }: ClientProfilePageProps) {
                 {profile.calleeTtsProvider === "ElevenLabs" &&
                 profile.customCalleeHash
                   ? "Using Custom Hash"
-                  : getVoice(profile.calleeTtsProvider, profile.calleeVoice)}
+                  : LanguageService.getVoice(
+                      profile.calleeTtsProvider,
+                      profile.calleeVoice
+                    )}
               </p>
             </div>
             {profile.calleeTtsProvider === "ElevenLabs" &&

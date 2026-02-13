@@ -10,15 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AMAZON_VOICES,
-  ELEVEN_LABS_VOICES,
-  ELEVEN_LABS_VOICES_TO_FRIENDLY,
-  getGoogleVoiceFriendlyName,
-  GOOGLE_VOICES,
-  LANGUAGES,
-  UserProfile,
-} from "@/types/profile";
+import { LanguageService } from "@/lib/services/language";
+import { UserProfile } from "@/types/profile";
 import { FormikCheckbox } from "../formik/formik-checkbox";
 import { FormikInput } from "../formik/formik-input";
 
@@ -41,22 +34,26 @@ export function ProfileForm({
 }: ProfileFormProps) {
   const callerVoices =
     values.sourceTtsProvider === "ElevenLabs"
-      ? ELEVEN_LABS_VOICES
+      ? LanguageService.ELEVEN_LABS_VOICES
       : values.sourceTtsProvider === "Amazon"
-      ? AMAZON_VOICES
-      : GOOGLE_VOICES;
+      ? LanguageService.AMAZON_VOICES
+      : LanguageService.GOOGLE_VOICES;
   const calleeVoices =
     values.calleeTtsProvider === "ElevenLabs"
-      ? ELEVEN_LABS_VOICES
+      ? LanguageService.ELEVEN_LABS_VOICES
       : values.calleeTtsProvider === "Amazon"
-      ? AMAZON_VOICES
-      : GOOGLE_VOICES;
+      ? LanguageService.AMAZON_VOICES
+      : LanguageService.GOOGLE_VOICES;
 
-  const filteredLanguagesForCaller = LANGUAGES.filter(
-    (lang) => values.sourceTtsProvider !== "Google" || lang.code !== "es-MX"
+  const filteredLanguagesForCaller = LanguageService.LANGUAGES.filter(
+    (lang) =>
+      (values.sourceTtsProvider !== "Google" || lang.code !== "es-MX") &&
+      (values.sourceTtsProvider !== "Amazon" || lang.code !== "pl-PL")
   );
-  const filteredLanguagesForCallee = LANGUAGES.filter(
-    (lang) => values.calleeTtsProvider !== "Google" || lang.code !== "es-MX"
+  const filteredLanguagesForCallee = LanguageService.LANGUAGES.filter(
+    (lang) =>
+      (values.calleeTtsProvider !== "Google" || lang.code !== "es-MX") &&
+      (values.calleeTtsProvider !== "Amazon" || lang.code !== "pl-PL")
   );
 
   return (
@@ -125,11 +122,11 @@ export function ProfileForm({
                   )?.map((voice) => (
                     <SelectItem key={voice} value={voice}>
                       {values.sourceTtsProvider === "ElevenLabs"
-                        ? ELEVEN_LABS_VOICES_TO_FRIENDLY[
-                            voice as keyof typeof ELEVEN_LABS_VOICES_TO_FRIENDLY
+                        ? LanguageService.ELEVEN_LABS_VOICES_TO_FRIENDLY[
+                            voice as keyof typeof LanguageService.ELEVEN_LABS_VOICES_TO_FRIENDLY
                           ] || voice
                         : values.sourceTtsProvider === "Google"
-                        ? getGoogleVoiceFriendlyName(voice)
+                        ? LanguageService.getGoogleVoiceFriendlyName(voice)
                         : voice}
                     </SelectItem>
                   ))}
@@ -252,11 +249,11 @@ export function ProfileForm({
                   )?.map((voice) => (
                     <SelectItem key={voice} value={voice}>
                       {values.calleeTtsProvider === "ElevenLabs"
-                        ? ELEVEN_LABS_VOICES_TO_FRIENDLY[
-                            voice as keyof typeof ELEVEN_LABS_VOICES_TO_FRIENDLY
+                        ? LanguageService.ELEVEN_LABS_VOICES_TO_FRIENDLY[
+                            voice as keyof typeof LanguageService.ELEVEN_LABS_VOICES_TO_FRIENDLY
                           ] || voice
                         : values.calleeTtsProvider === "Google"
-                        ? getGoogleVoiceFriendlyName(voice)
+                        ? LanguageService.getGoogleVoiceFriendlyName(voice)
                         : voice}
                     </SelectItem>
                   ))}
