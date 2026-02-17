@@ -12,15 +12,19 @@ import {
 
 import { HeroBanner } from "@/components/HeroBanner";
 import { useSessions } from "@/hooks/use-sessions";
-import { UserProfile } from "@/types/profile";
+import { Session, UserProfile } from "@/types/profile";
 import Link from "next/link";
 
 export type ClientHomepageProps = {
   profiles: UserProfile[];
+  serverSessions: Session[];
 };
 
-export const ClientHomepage = ({ profiles }: ClientHomepageProps) => {
-  const { sessions } = useSessions([]);
+export const ClientHomepage = ({
+  profiles,
+  serverSessions,
+}: ClientHomepageProps) => {
+  const { sessions } = useSessions(serverSessions);
   const previewProfiles = profiles.slice(0, 3);
   const previewSessions = sessions
     .sort((a, b) => (b.expireAt || 0) - (a.expireAt || 0))

@@ -18,7 +18,7 @@ const steps = [
 ];
 
 export function HeroBanner({
-  title = "ConversationRelay Translator",
+  title = "Live Translator",
   subtitle = "Build, test, and launch AI-powered translation experiences across voice channels in just minutes.",
 }: HeroBannerProps) {
   return (

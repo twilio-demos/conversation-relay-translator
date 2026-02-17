@@ -1,4 +1,4 @@
-import { listProfiles } from "@/lib/dynamodb";
+import { listProfiles, listSessions } from "@/lib/dynamodb";
 import { getServerSession } from "next-auth/next";
 import { ClientHomepage } from "./components/pages/homepage";
 
@@ -9,6 +9,7 @@ export default async function Home() {
   const owner =
     process.env.NEXT_PUBLIC_EMAIL || session?.user?.email || undefined;
   const profiles = await listProfiles(owner);
+  const sessions = await listSessions();
 
-  return <ClientHomepage profiles={profiles} />;
+  return <ClientHomepage profiles={profiles} serverSessions={sessions} />;
 }

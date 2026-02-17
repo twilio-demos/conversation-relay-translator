@@ -74,7 +74,7 @@ export function ProfileForm({
             <FormikInput name="name" label="Name" type="text" required />
             <FormikInput
               name="phoneNumber"
-              label="Phone Number"
+              label="Your Phone Number"
               type="tel"
               placeholder="+1234567890"
               required
@@ -301,7 +301,18 @@ export function ProfileForm({
 
         <div className="px-6 pb-6">
           <div className="mb-4 border-t pt-6">
-            <h3 className="text-lg font-semibold mb-4">Flex Settings</h3>
+            <div className="flex flex-col gap-1 mb-4">
+              <h3 className="text-lg font-semibold">
+                Flex Settings (optional)
+              </h3>
+              <span className="text-sm text-muted-foreground">
+                Either use the default Flex account (make sure you have access)
+                or use your own Flex account by enabling "Use External Flex"
+                below and entering the number for your handoff to Flex. Enter in
+                the worker handle for the Flex worker that will be picking up
+                your call.
+              </span>
+            </div>
             <div className="flex flex-col rounded-lg space-y-4">
               <FormikCheckbox
                 name="useFlex"
