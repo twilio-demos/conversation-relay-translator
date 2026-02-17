@@ -1,12 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  UserPlus,
-  Languages,
-  PhoneCall,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight, Languages, PhoneCall, UserPlus } from "lucide-react";
 import Image from "next/image";
 
 type HeroBannerProps = {
@@ -14,10 +9,12 @@ type HeroBannerProps = {
   subtitle?: string;
 };
 
+const phoneNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+12232155654";
+
 const steps = [
   { icon: UserPlus, label: "1. Create a profile" },
   { icon: Languages, label: "2. Configure Languages" },
-  { icon: PhoneCall, label: "3. Call Number" },
+  { icon: PhoneCall, label: "3. Call Number", description: phoneNumber },
 ];
 
 export function HeroBanner({
@@ -44,28 +41,37 @@ export function HeroBanner({
               {steps.map((step) => (
                 <div
                   key={step.label}
-                  className="flex flex-col items-center text-center gap-3"
-                >
+                  className="flex flex-col items-center text-center gap-3">
                   <step.icon className="h-10 w-10 text-blue-500" />
-                  <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
-                    {step.label}
-                  </span>
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+                      {step.label}
+                    </span>
+                    <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap min-h-[1rem]">
+                      {step.description}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Workflow steps - desktop (with arrows) */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-start gap-6">
               {steps.map((step, i) => (
                 <div key={step.label} className="contents">
                   <div className="flex flex-col items-center text-center gap-3">
                     <step.icon className="h-12 w-12 text-blue-500" />
-                    <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
-                      {step.label}
-                    </span>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
+                        {step.label}
+                      </span>
+                      <span className="text-sm font-bold text-muted-foreground whitespace-nowrap min-h-[1.25rem]">
+                        {step.description}
+                      </span>
+                    </div>
                   </div>
                   {i < steps.length - 1 && (
-                    <ArrowRight className="h-5 w-5 text-blue-500 shrink-0 mb-6" />
+                    <ArrowRight className="h-5 w-5 text-blue-500 shrink-0 mt-6" />
                   )}
                 </div>
               ))}

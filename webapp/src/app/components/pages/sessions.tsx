@@ -98,6 +98,9 @@ function SessionCard({ session }: { session: Session }) {
                 {session.name || "Unknown Caller"}
               </h3>
               <Badge
+                className={
+                  session.callStatus === "connected" ? "bg-green-500" : ""
+                }
                 variant={
                   session.callStatus === "connected" ? "default" : "secondary"
                 }>

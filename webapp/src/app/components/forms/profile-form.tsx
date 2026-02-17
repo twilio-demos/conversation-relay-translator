@@ -60,24 +60,6 @@ export function ProfileForm({
     <form onSubmit={onSubmit} className="space-y-8" noValidate>
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormikInput name="name" label="Name" type="text" required />
-            <FormikInput
-              name="phoneNumber"
-              label="Phone Number"
-              type="tel"
-              placeholder="+1234567890"
-              required
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle>
             <div className="flex flex-col gap-2">
               <span>Caller Settings</span>
@@ -89,6 +71,14 @@ export function ProfileForm({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-6">
+            <FormikInput name="name" label="Name" type="text" required />
+            <FormikInput
+              name="phoneNumber"
+              label="Phone Number"
+              type="tel"
+              placeholder="+1234567890"
+              required
+            />
             <div className="space-y-2">
               <Label htmlFor="sourceLanguage">Language</Label>
               <Select
