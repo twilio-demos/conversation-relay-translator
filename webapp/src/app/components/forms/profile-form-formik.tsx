@@ -197,7 +197,10 @@ export function ProfileFormFormik({
           const availableVoices =
             voices[language.translateCode as keyof typeof voices];
 
+          console.log({ availableVoices });
+
           const defaultVoice = availableVoices?.[0] || "";
+          console.log({ defaultVoice });
 
           if (type === "source") {
             setFieldValue("sourceLanguage", language.code);
@@ -212,12 +215,43 @@ export function ProfileFormFormik({
           }
         };
 
+        const onProviderChange = (
+          type: "source" | "callee",
+          provider: string
+        ) => {
+          const languageCode =
+            type === "source"
+              ? values.sourceLanguageCode
+              : values.calleeLanguageCode;
+
+          const voices =
+            provider === "ElevenLabs"
+              ? LanguageService.ELEVEN_LABS_VOICES
+              : provider === "Amazon"
+              ? LanguageService.AMAZON_VOICES
+              : LanguageService.GOOGLE_VOICES;
+
+          const availableVoices = voices[languageCode as keyof typeof voices];
+          const defaultVoice = availableVoices?.[0];
+          console.log({ defaultVoice });
+
+          // Update both provider and voice together to avoid race condition
+          if (type === "source") {
+            setFieldValue("sourceTtsProvider", provider);
+            setFieldValue("sourceVoice", defaultVoice);
+          } else {
+            setFieldValue("calleeTtsProvider", provider);
+            setFieldValue("calleeVoice", defaultVoice);
+          }
+        };
+
         return (
           <ProfileForm
             values={values}
             isSubmitting={isSubmitting}
             onFieldChange={setFieldValue}
             onLanguageChange={handleLanguageChange}
+            onProviderChange={onProviderChange}
             onSubmit={handleSubmit}
           />
         );

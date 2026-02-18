@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { LanguageService } from "@/lib/services/language";
 import { UserProfile } from "@/types/profile";
+import { useEffect } from "react";
 import { FormikCheckbox } from "../formik/formik-checkbox";
 import { FormikInput } from "../formik/formik-input";
 
@@ -20,6 +21,7 @@ interface ProfileFormProps {
   isSubmitting: boolean;
   onFieldChange: (field: keyof UserProfile, value: any) => void;
   onLanguageChange: (type: "source" | "callee", languageCode: string) => void;
+  onProviderChange: (type: "source" | "callee", provider: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onCancel?: () => void;
 }
@@ -28,6 +30,7 @@ export function ProfileForm({
   values,
   isSubmitting,
   onFieldChange,
+  onProviderChange,
   onLanguageChange,
   onSubmit,
   onCancel,
@@ -55,6 +58,10 @@ export function ProfileForm({
       (values.calleeTtsProvider !== "Google" || lang.code !== "es-MX") &&
       (values.calleeTtsProvider !== "Amazon" || lang.code !== "pl-PL")
   );
+
+  useEffect(() => {
+    console.log({ values });
+  }, [values]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-8" noValidate>
@@ -100,7 +107,10 @@ export function ProfileForm({
               <Label htmlFor="sourceVoice">Voice</Label>
               <Select
                 value={values.sourceVoice}
-                onValueChange={(value) => onFieldChange("sourceVoice", value)}>
+                onValueChange={(value) => {
+                  if (!value) return;
+                  onFieldChange("sourceVoice", value);
+                }}>
                 <SelectTrigger id="sourceVoice">
                   <SelectValue />
                 </SelectTrigger>
@@ -145,9 +155,7 @@ export function ProfileForm({
               <Label htmlFor="sourceTtsProvider">TTS Provider</Label>
               <Select
                 value={values.sourceTtsProvider}
-                onValueChange={(value) =>
-                  onFieldChange("sourceTtsProvider", value)
-                }>
+                onValueChange={(value) => onProviderChange("source", value)}>
                 <SelectTrigger id="sourceTtsProvider">
                   <SelectValue />
                 </SelectTrigger>
@@ -227,7 +235,10 @@ export function ProfileForm({
               <Label htmlFor="calleeVoice">Voice</Label>
               <Select
                 value={values.calleeVoice}
-                onValueChange={(value) => onFieldChange("calleeVoice", value)}>
+                onValueChange={(value) => {
+                  if (!value) return;
+                  onFieldChange("calleeVoice", value);
+                }}>
                 <SelectTrigger id="calleeVoice">
                   <SelectValue />
                 </SelectTrigger>
@@ -272,9 +283,7 @@ export function ProfileForm({
               <Label htmlFor="calleeTtsProvider">TTS Provider</Label>
               <Select
                 value={values.calleeTtsProvider}
-                onValueChange={(value) =>
-                  onFieldChange("calleeTtsProvider", value)
-                }>
+                onValueChange={(value) => onProviderChange("callee", value)}>
                 <SelectTrigger id="calleeTtsProvider">
                   <SelectValue />
                 </SelectTrigger>
