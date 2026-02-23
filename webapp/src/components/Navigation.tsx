@@ -3,11 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
 export function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
+
+  const handleBasicSignOut = async () => {
+    await fetch("/api/auth/basic-logout", { method: "POST" });
+    router.push("/auth/basic-signin");
+    router.refresh();
+  };
 
   const links = [
     { href: "/", label: "Home" },
@@ -43,7 +51,8 @@ export function Navigation() {
                   key={link.href}
                   variant={isActive ? "underline" : "ghost"}
                   size="sm"
-                  asChild>
+                  asChild
+                >
                   <Link href={link.href} target={link.target}>
                     {link.label}
                   </Link>
@@ -51,7 +60,19 @@ export function Navigation() {
               );
             })}
 
-            {process.env.NEXT_PUBLIC_EXTERNAL !== "true" &&
+            {process.env.NEXT_PUBLIC_EXTERNAL === "true" ? (
+              pathname !== "/auth/basic-signin" && (
+                <Button
+                  onClick={handleBasicSignOut}
+                  variant="destructive"
+                  size="sm"
+                  className="ml-4"
+                >
+                  Sign Out
+                </Button>
+              )
+            ) : (
+              process.env.NEXT_PUBLIC_EXTERNAL !== "true" &&
               (session ? (
                 <div className="flex items-center space-x-3 ml-4">
                   <span className="text-sm text-muted-foreground">
@@ -60,7 +81,8 @@ export function Navigation() {
                   <Button
                     onClick={() => signOut()}
                     variant="destructive"
-                    size="sm">
+                    size="sm"
+                  >
                     Sign Out
                   </Button>
                 </div>
@@ -68,10 +90,12 @@ export function Navigation() {
                 <Button
                   onClick={() => signIn("google")}
                   size="sm"
-                  className="ml-4">
+                  className="ml-4"
+                >
                   Sign In
                 </Button>
-              ))}
+              ))
+            )}
           </div>
         </div>
       </div>
