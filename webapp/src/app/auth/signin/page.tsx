@@ -8,9 +8,9 @@ import { useState } from "react";
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsLoading(true);
-    await signIn("google", { callbackUrl: "/" });
+    signIn("google", { callbackUrl: "/" });
   };
 
   return (

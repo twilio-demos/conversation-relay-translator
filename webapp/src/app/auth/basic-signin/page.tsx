@@ -27,8 +27,7 @@ function BasicSignInForm() {
 
       if (res.ok) {
         const callbackUrl = searchParams.get("callbackUrl") || "/";
-        router.push(callbackUrl);
-        router.refresh();
+        window.location.href = callbackUrl;
       } else {
         setError("Invalid username or password.");
       }
