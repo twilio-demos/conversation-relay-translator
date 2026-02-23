@@ -13,6 +13,7 @@ export class LanguageService {
     { code: "nl-NL", friendly: "Dutch", translateCode: "nl" },
     { code: "ko-KR", friendly: "Korean", translateCode: "ko" },
     { code: "pl-PL", friendly: "Polish", translateCode: "pl" },
+    { code: "hi-IN", friendly: "Hindi", translateCode: "hi" },
   ];
 
   public static AMAZON_VOICES = {
@@ -28,6 +29,7 @@ export class LanguageService {
     nl: ["Laura-Neural", "Ruben"], // Dutch
     ko: ["Seoyeon-Neural"], // Korean
     pl: ["Ewa-Generative", "Jan"], // Polish
+    hi: ["Kajal-Neural"], // Hindi
   };
 
   public static GOOGLE_VOICES = {
@@ -43,6 +45,7 @@ export class LanguageService {
     nl: ["nl-NL-Chirp3-HD-Aoede", "nl-NL-Chirp3-HD-Charon"], // Dutch
     ko: ["ko-KR-Chirp3-HD-Aoede", "ko-KR-Chirp3-HD-Charon"], // Korean
     pl: ["pl-PL-Chirp3-HD-Aoede", "pl-PL-Chirp3-HD-Charon"], // Polish
+    hi: ["hi-IN-Chirp3-HD-Aoede", "hi-IN-Chirp3-HD-Charon"], // Hindi
   };
   public static ELEVEN_LABS_VOICES = {
     en: ["UgBBYS2sOqTuMpoF3BR0", "xctasy8XvGp2cVO9HL9k"], // English
@@ -56,7 +59,8 @@ export class LanguageService {
     "zh-TW": ["OjkyUe8dIihIFvOisuvM", "n4xdXKggn5lFcXFYE4TA"], // Chinese (Cantonese)
     nl: ["fzC7H9Y1bPn3gzVLtghe", "XJa38TJgDqYhj5mYbSJA"], // Dutch
     ko: ["bciERhbhQhAIWwvnQA7H", "uyVNoMrnUku1dZyVEXwD"], // Korean
-    pl: ["hIssydxXZ1WuDorjx6Ic", "PZA29eU9xAii8qmsl1cE"],
+    pl: ["hIssydxXZ1WuDorjx6Ic", "PZA29eU9xAii8qmsl1cE"], // Polish
+    hi: ["kiaJRdXJzloFWi6AtFBf", "iWNf11sz1GrUE4ppxTOL"], // Hindi
   };
 
   public static ELEVEN_LABS_VOICES_TO_FRIENDLY: Record<string, string> = {
@@ -84,6 +88,8 @@ export class LanguageService {
     Bj4Malc5SZLoXfPtxRxH: "Hiro",
     hIssydxXZ1WuDorjx6Ic: "Piotr",
     PZA29eU9xAii8qmsl1cE: "Emilia",
+    kiaJRdXJzloFWi6AtFBf: "Tarini",
+    iWNf11sz1GrUE4ppxTOL: "Viraj",
   };
 
   public static getGoogleVoiceFriendlyName(voice: string) {
@@ -105,7 +111,7 @@ export class LanguageService {
 
   public static getVoice(
     provider: "Google" | "Amazon" | "ElevenLabs",
-    voice: string
+    voice: string,
   ) {
     switch (provider) {
       case "Google":
