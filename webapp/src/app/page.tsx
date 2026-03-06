@@ -9,7 +9,7 @@ export default async function Home() {
   const owner =
     process.env.NEXT_PUBLIC_EMAIL || session?.user?.email || undefined;
   const profiles = await listProfiles(owner);
-  const sessions = await listSessions();
+  const sessions = await listSessions(owner);
 
   return <ClientHomepage profiles={profiles} serverSessions={sessions} />;
 }
