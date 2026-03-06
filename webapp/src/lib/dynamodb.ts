@@ -190,9 +190,12 @@ export async function listSessions(creator?: string): Promise<Session[]> {
       )
     : [];
 
+  console.log({ allSessions });
+
   if (!creator) return allSessions;
 
   const profiles = await listProfiles(creator);
+  console.log({ profiles });
   const phoneNumbers = new Set(profiles.map((p) => p.phoneNumber));
   return allSessions.filter((s) => phoneNumbers.has(s.phoneNumber));
 }
