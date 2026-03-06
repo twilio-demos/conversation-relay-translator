@@ -90,7 +90,7 @@ export function dynamoDBToSession(item: any): Session {
     connectionId: item.pk,
     callSid: item.callSid,
     name: item.name,
-    phoneNumber: item.phoneNumber,
+    phoneNumber: item.callerPhone,
     calleeNumber: item.calleeNumber,
     sourceLanguage: item.sourceLanguage,
     sourceLanguageCode: item.sourceLanguageCode,
