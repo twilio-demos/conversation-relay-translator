@@ -38,8 +38,8 @@ const analytics = new Analytics({
 export const lambdaHandler = async (event, context) => {
   let snsPayload = JSON.parse(event.Records[0].Sns.Message);
 
-  console.info("EVENT\n" + JSON.stringify(event, null, 2));
-  console.info("Message\n" + JSON.stringify(snsPayload, null, 2));
+  console.info("EVENT" + JSON.stringify(event, null, 2));
+  console.info("Message" + JSON.stringify(snsPayload, null, 2));
 
   try {
     let agentContext = {};
@@ -161,10 +161,12 @@ export const lambdaHandler = async (event, context) => {
     for (const [key, value] of Object.entries(customParams)) {
       customParamsString += `      <Parameter name="${key}" value="${value}" />
     `;
-      console.log(`${key}: ${value}`);
     }
 
     let welcomeMessage = "Initiating translation session.";
+    console.info(
+      "[Outbound Welcome Greeting]: Outbound welcome greeting sent."
+    );
 
     // Get a localized version of the welcome message if not in English
     if (
@@ -196,6 +198,12 @@ export const lambdaHandler = async (event, context) => {
       voice: agentContext.sourceVoice,
     };
 
+    console.info(
+      `[conversationRelayParams]: ${Object.entries(conversationRelayParams)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ")}`
+    );
+
     /**
      * Pull out params for attributes for ConversationRelay TwiML tag ==>
      * Could be dynamic for language, tts, stt...
@@ -203,7 +211,6 @@ export const lambdaHandler = async (event, context) => {
     let conversationRelayParamsString = "";
     for (const [key, value] of Object.entries(conversationRelayParams)) {
       conversationRelayParamsString += `${key}="${value}" `;
-      console.log(`${key}: ${value}`);
     }
 
     // Generate Twiml to spin up ConversationRelay connection
@@ -242,6 +249,7 @@ export const lambdaHandler = async (event, context) => {
       lastProxy: Date.now(),
       expireAt: Math.floor(Date.now() / 1000) + 300, // Delete Record after 1 minute -- short lived proxy session!
     };
+
     console.info("proxyItem\n" + JSON.stringify(proxyItem, null, 2));
 
     // Save the proxy session in the database so it is available to the application managed

@@ -37,7 +37,11 @@ export const lambdaHandler = async (event, context) => {
   let bufferObj = Buffer.from(event.body, "base64");
   let twilio_body = querystring.decode(bufferObj.toString("utf8"));
 
-  console.info("twilio_body ==>\n" + JSON.stringify(twilio_body, null, 2));
+  console.info(
+    `[twilio_body]: ${Object.entries(twilio_body)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(", ")}`
+  );
 
   try {
     // 2) Use From number to look up user record (if exists)
@@ -89,6 +93,7 @@ export const lambdaHandler = async (event, context) => {
         sourceVoice: "Matthew-Generative", // ("Matthew-Generative") Voice for TTS (depends on ttsProvider)
       };
     }
+
     console.info("userContext ==>\n" + JSON.stringify(userContext, null, 2));
 
     // 3) Determine Translation session params to use
@@ -124,6 +129,7 @@ export const lambdaHandler = async (event, context) => {
      */
 
     let welcomeGreeting = "Please wait while we connect you to a translator.";
+    console.info("[Greeting]: Welcome Greeting sent.");
 
     // Get a localized version of the welcome message if not in English
     if (
@@ -155,7 +161,6 @@ export const lambdaHandler = async (event, context) => {
     let conversationRelayParamsString = "";
     for (const [key, value] of Object.entries(conversationRelayParams)) {
       conversationRelayParamsString += `${key}="${value}" `;
-      console.log(`${key}: ${value}`);
     }
 
     // These Passed as <Parameters></Parameters> into "setup" message sent by ConversationRelay
@@ -163,7 +168,6 @@ export const lambdaHandler = async (event, context) => {
     for (const [key, value] of Object.entries(customParams)) {
       customParamsString += `            <Parameter name="${key}" value="${value}" />
 `;
-      console.log(`${key}: ${value}`);
     }
 
     // Generate Twiml to spin up ConversationRelay connection
@@ -175,10 +179,10 @@ export const lambdaHandler = async (event, context) => {
     </Connect>
 </Response>`;
 
-    console.log("twiml ==> ", twiml);
+    console.info("twiml ==> ", twiml);
 
     try {
-      console.log("Sending Segment event for user:", customParams.creator);
+      console.info("[Segment]: Sent event for user:", customParams.creator);
       await analytics.track({
         event: "Inbound Call Placed",
         userId: customParams.creator,
@@ -189,9 +193,9 @@ export const lambdaHandler = async (event, context) => {
       });
 
       await analytics.flush();
-      console.log("Segment event sent successfully");
+      console.info("[Segment]: Event sent successfully");
     } catch (segmentError) {
-      console.error("Segment tracking error:", segmentError);
+      console.error("[Segment]: Tracking error:", segmentError);
     }
 
     // Return the twiml to Twilio
@@ -201,7 +205,7 @@ export const lambdaHandler = async (event, context) => {
       body: twiml,
     };
   } catch (err) {
-    console.log("Error using handling call => ", err);
+    console.error("Error using handling call:", err);
     return false;
   }
 };
