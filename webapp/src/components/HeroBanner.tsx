@@ -9,7 +9,7 @@ type HeroBannerProps = {
   subtitle?: string;
 };
 
-const phoneNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+12232155654";
+const phoneNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+18557539225";
 
 const steps = [
   { icon: UserPlus, label: "1. Create a profile" },
