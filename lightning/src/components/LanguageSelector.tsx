@@ -8,15 +8,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useResetLanguage } from "@/hooks/use-reset-language";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { LanguageService } from "@/lib/services/language";
+import { useEffect } from "react";
 
 const LANGUAGES = LanguageService.LANGUAGES;
 
 export function LanguageSelector() {
-  const { selectedLanguage, setSelectedLanguage, isPhone1, phone1 } =
+  const { selectedLanguage, setSelectedLanguage, isPhone1, phone1, setDemoActive } =
     useDemo();
   const { mutate: updateProfile, isPending, isSuccess } = useUpdateProfile();
+  const resetLanguage = useResetLanguage();
+
+  useEffect(() => {
+    setDemoActive(true);
+    resetLanguage();
+    fetch("/api/cintel", { method: "DELETE" }).catch(console.error);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleLanguageChange(code: string) {
     const lang = LANGUAGES.find((l) => l.code === code) ?? null;

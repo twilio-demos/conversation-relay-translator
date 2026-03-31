@@ -1,9 +1,10 @@
 "use client";
 
+import { useDemo } from "@/components/DemoProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useDemo } from "@/components/DemoProvider";
+import { useResetLanguage } from "@/hooks/use-reset-language";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -33,10 +34,14 @@ export function CtaForm() {
   });
   const [countdown, setCountdown] = useState<number | null>(null);
   const { resetDemo } = useDemo();
+  const resetLanguage = useResetLanguage();
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
     mutationFn: submitForm,
-    onSuccess: () => setCountdown(3),
+    onSuccess: () => {
+      resetLanguage();
+      setCountdown(3);
+    },
   });
 
   useEffect(() => {
@@ -137,7 +142,7 @@ export function CtaForm() {
       )}
 
       <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Submitting..." : "Get Started"}
+        {isPending ? "Submitting..." : "Submit"}
       </Button>
     </form>
   );

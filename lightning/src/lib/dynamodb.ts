@@ -1,6 +1,8 @@
+import { OperatorResult, StoredOperatorResult } from "@/types/cintel";
 import { ConversationMessage, Session, UserProfile } from "@/types/profile";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
+  BatchWriteCommand,
   DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
@@ -230,6 +232,62 @@ export async function getConversation(
   return response.Items
     ? response.Items.map(dynamoDBToConversationMessage)
     : [];
+}
+
+// Store an operator result keyed by its unique id
+export async function putCintelOperatorResult(
+  operatorResult: OperatorResult,
+  operatorFor: "phone1" | "phone2",
+  cintelConversationId: string
+): Promise<void> {
+  const stored: StoredOperatorResult = { ...operatorResult, operatorFor, cintelConversationId };
+  const command = new PutCommand({
+    TableName: TABLE_NAME,
+    Item: {
+      pk: operatorResult.id,
+      sk: "cintel",
+      pk1: "cintel",
+      sk1: operatorResult.dateCreated,
+      data: stored,
+    },
+  });
+  await docClient.send(command);
+}
+
+// Delete all cintel operator results
+export async function deleteCintelResults(): Promise<void> {
+  const queryCommand = new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: "index-1-full",
+    KeyConditionExpression: "pk1 = :pk1",
+    ExpressionAttributeValues: { ":pk1": "cintel" },
+    ProjectionExpression: "pk, sk",
+  });
+  const { Items = [] } = await docClient.send(queryCommand);
+  if (Items.length === 0) return;
+
+  // BatchWrite supports up to 25 items per request
+  for (let i = 0; i < Items.length; i += 25) {
+    const batch = Items.slice(i, i + 25).map((item) => ({
+      DeleteRequest: { Key: { pk: item.pk, sk: item.sk } },
+    }));
+    await docClient.send(
+      new BatchWriteCommand({ RequestItems: { [TABLE_NAME]: batch } })
+    );
+  }
+}
+
+// Get all operator results ordered by dateCreated descending
+export async function getCintelResults(): Promise<StoredOperatorResult[]> {
+  const command = new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: "index-1-full",
+    KeyConditionExpression: "pk1 = :pk1",
+    ExpressionAttributeValues: { ":pk1": "cintel" },
+    ScanIndexForward: false,
+  });
+  const response = await docClient.send(command);
+  return response.Items ? response.Items.map((item) => item.data as StoredOperatorResult) : [];
 }
 
 // Delete a profile

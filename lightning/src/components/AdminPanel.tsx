@@ -11,7 +11,7 @@ const VIEWS: { label: string; value: AdminOverride }[] = [
 
 export function AdminPanel() {
   const [visible, setVisible] = useState(false);
-  const { adminOverride, setAdminOverride, phone1, setPhone1, phone2, setPhone2, isPhone1, setIsPhone1 } = useDemo();
+  const { adminOverride, setAdminOverride, phone1, setPhone1, phone2, setPhone2, isPhone1, setIsPhone1, resetDemo } = useDemo();
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -83,6 +83,11 @@ export function AdminPanel() {
           />
         </div>
       </div>
+      <button
+        onClick={resetDemo}
+        className="w-full mt-4 text-xs px-3 py-2 rounded-lg bg-red-900/50 text-red-300 hover:bg-red-900 transition-colors">
+        Reset Demo
+      </button>
       <p className="text-xs text-white/30 mt-3">Ctrl+Shift+A to toggle</p>
     </div>
   );

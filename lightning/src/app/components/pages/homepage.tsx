@@ -14,7 +14,16 @@ export type ClientHomepageProps = {
 
 export const ClientHomepage = ({ serverSessions }: ClientHomepageProps) => {
   const { sessions } = useSessions(serverSessions);
-  const { setCallActive, demoActive, pinnedConversationId, setPinnedConversationId, phone1, phone2 } = useDemo();
+  const {
+    setCallActive,
+    demoActive,
+    pinnedConversationId,
+    setPinnedConversationId,
+    phone1,
+    phone2,
+    isPhone1,
+  } = useDemo();
+  const publicPhone = process.env.NEXT_PUBLIC_PHONE_NUMBER;
 
   const currentSession = sessions
     .filter(
@@ -35,19 +44,35 @@ export const ClientHomepage = ({ serverSessions }: ClientHomepageProps) => {
     }
   }, [liveId, demoActive]);
 
-  const conversationId = demoActive ? (pinnedConversationId || liveId) : liveId;
+  const conversationId = demoActive ? pinnedConversationId || liveId : liveId;
 
   return (
     <div className="h-full">
-      <div
-        className="grid grid-cols-1 lg:grid-cols-[1fr_640px] gap-6 items-stretch h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_640px] gap-6 items-stretch h-full">
         {/* Left: Conversation */}
         <div className="flex flex-col">
           {conversationId ? (
             <Conversation serverConversation={[]} id={conversationId} />
           ) : (
-            <div className="flex-1 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center text-center text-muted-foreground text-lg h-full p-8" style={{ boxShadow: "inset 0 0 30px rgba(99,179,237,0.15)" }}>
-              No active sessions. Start a call to see the conversation here.
+            <div
+              className="flex-1 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center text-center text-muted-foreground text-2xl h-full p-8"
+              style={{ boxShadow: "inset 0 0 30px rgba(99,179,237,0.15)" }}>
+              {isPhone1 ? (
+                <>
+                  Pick a language and call&nbsp;
+                  <span className="text-foreground font-medium">
+                    {publicPhone}
+                  </span>
+                  &nbsp; to start
+                </>
+              ) : (
+                <>
+                  Wait on a call from&nbsp;
+                  <span className="text-foreground font-medium">
+                    {publicPhone}
+                  </span>
+                </>
+              )}
             </div>
           )}
         </div>

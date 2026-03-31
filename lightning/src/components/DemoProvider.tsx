@@ -26,6 +26,8 @@ type DemoContextValue = {
   adminOverride: AdminOverride;
   setAdminOverride: (override: AdminOverride) => void;
   resetDemo: () => void;
+  pinnedCintelConversationId: string;
+  setPinnedCintelConversationId: (id: string) => void;
   phone1: string;
   setPhone1: (v: string) => void;
   phone2: string;
@@ -42,9 +44,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   );
   const [callActive, setCallActive] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
-  const [demoActive, setDemoActive] = useState(false);
+  const [demoActive, setDemoActive] = useState(true);
   const [pinnedConversationId, setPinnedConversationId] = useState("");
   const [adminOverride, setAdminOverride] = useState<AdminOverride>(null);
+  const [pinnedCintelConversationId, setPinnedCintelConversationId] = useState("");
   const [phone1, setPhone1Raw] = useState<string>(() =>
     typeof window !== "undefined" ? (localStorage.getItem(LS_PHONE1) ?? DEFAULT_PHONE1) : DEFAULT_PHONE1
   );
@@ -85,7 +88,9 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setDemoActive(false);
     setPinnedConversationId("");
     setAdminOverride(null);
+    setPinnedCintelConversationId("");
     prevCallActive.current = false;
+    fetch("/api/cintel", { method: "DELETE" }).catch(console.error);
   }
 
   function handleSetSelectedLanguage(lang: Language | null) {
@@ -112,6 +117,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         adminOverride,
         setAdminOverride,
         resetDemo,
+        pinnedCintelConversationId,
+        setPinnedCintelConversationId,
         phone1,
         setPhone1,
         phone2,
