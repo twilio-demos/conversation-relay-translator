@@ -1,0 +1,86 @@
+.message-wrapper {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.message-wrapper.caller {
+  justify-content: flex-start;
+}
+
+.message-wrapper.agent {
+  justify-content: flex-end;
+}
+
+.message-content {
+  max-width: 70%;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content.caller {
+  background-color: #e3f2fd;
+  color: #1a1a1a;
+}
+
+.message-content.agent {
+  background-color: #2196f3;
+  color: #ffffff;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.message-party {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.message-section {
+  margin-bottom: 0.5rem;
+}
+
+.message-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  opacity: 0.8;
+}
+
+.message-text {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.message-translation {
+  padding-top: 0.5rem;
+  border-top: 1px solid currentColor;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+.message-text.italic {
+  font-style: italic;
+}
+
+/* Chat UI Kit overrides for individual messages */
+.cs-message__content {
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+.cs-message__html-content {
+  margin: 0;
+}
