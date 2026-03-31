@@ -36,8 +36,6 @@ const memoryProfileLookup = async (phoneNumber: string) => {
     return undefined;
   }
 
-  console.log({ data });
-
   return data;
 };
 
@@ -65,8 +63,6 @@ export async function POST(request: NextRequest) {
       payload.summariesLimit = rest.summariesLimit;
     if (rest.relevanceThreshold !== undefined)
       payload.relevanceThreshold = rest.relevanceThreshold;
-
-    console.log({ payload });
 
     const response = await fetch(fetchUrl, {
       method: "POST",

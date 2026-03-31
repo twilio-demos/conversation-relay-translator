@@ -25,6 +25,7 @@ export interface OperatorResult {
 export type StoredOperatorResult = OperatorResult & {
   operatorFor: "phone1" | "phone2";
   cintelConversationId: string;
+  phoneNumber?: string;
 };
 
 export interface Operator {

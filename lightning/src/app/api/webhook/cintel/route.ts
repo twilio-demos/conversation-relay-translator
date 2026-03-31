@@ -1,4 +1,5 @@
 import { putCintelOperatorResult } from "@/lib/dynamodb";
+import { fetchProfile } from "@/lib/twilio-memory";
 import { CintelResult } from "@/types/cintel";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -72,20 +73,40 @@ export async function POST(request: NextRequest) {
         (participant) => participant.type === "CUSTOMER"
       );
 
+      const agentParticipant = participants.find(
+        (participant) => participant.type !== "CUSTOMER"
+      );
+
+      let customerPhone: string | undefined;
+      let agentPhone: string | undefined;
+
+      if (customerParticipant?.profileId) {
+        const customerProfile = await fetchProfile(
+          customerParticipant.profileId
+        );
+        customerPhone = customerProfile?.traits?.Contact?.phone ?? undefined;
+      }
+
+      if (agentParticipant?.profileId) {
+        const agentProfile = await fetchProfile(agentParticipant.profileId);
+        agentPhone = agentProfile?.traits?.Contact?.phone ?? undefined;
+      }
+
       const messageSentBy =
         customerParticipant?.id === lastCommunicationData.author.participantId
           ? "CUSTOMER"
           : "HUMAN_AGENT";
 
-      let operatorFor: string 
+      const operatorFor = messageSentBy === "CUSTOMER" ? "phone1" : "phone2";
+      const phoneNumber =
+        messageSentBy === "CUSTOMER" ? customerPhone : agentPhone;
 
-      if (messageSentBy === "CUSTOMER") {
-        operatorFor =  'phone1'
-      } else {
-        operatorFor =  'phone2'
-      }
-
-      await putCintelOperatorResult(result, operatorFor as "phone1" | "phone2", conversationId);
+      await putCintelOperatorResult(
+        result,
+        operatorFor,
+        conversationId,
+        phoneNumber
+      );
     }
 
     return NextResponse.json({ success: true });

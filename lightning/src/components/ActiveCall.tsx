@@ -38,7 +38,7 @@ export function ActiveCall() {
     <div className="flex flex-col h-full w-full divide-y divide-white/10">
       {/* Top: Realtime Conversational Intelligence */}
       <div className="h-1/2 flex flex-col p-6 overflow-y-auto">
-        <p className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-4">
+        <p className="text-lg font-semibold text-white/60 uppercase tracking-widest mb-4">
           Realtime Conversational Intelligence
         </p>
         {results && results.length > 0 ? (
@@ -66,16 +66,33 @@ export function ActiveCall() {
         )}
       </div>
 
-      {/* Bottom: Active call status */}
-      <div className="h-1/2 flex flex-col items-center justify-center text-center gap-4 p-6">
-        <span className="text-5xl">📞</span>
-        <p className="text-3xl font-semibold text-white">Call Started</p>
-        <p className="text-xl text-muted-foreground">
-          Speak in{" "}
-          <span className="text-white font-semibold">
-            {selectedLanguage?.friendly ?? "your language"}
-          </span>
+      {/* Bottom: Conversation starters */}
+      <div className="h-1/2 flex flex-col p-6 overflow-y-auto">
+        <p className="text-lg font-semibold text-white/60 uppercase tracking-widest mb-1">
+          Try saying something like…
         </p>
+        <p className="text-xs text-muted-foreground mb-4">
+          Speak in{" "}
+          <span className="text-white font-medium">
+            {selectedLanguage?.friendly ?? "your language"}
+          </span>{" "}
+          — we'll translate it automatically
+        </p>
+        <div className="flex flex-col gap-2">
+          {[
+            "How is your day going?",
+            "What do you like to do for fun?",
+            "Have you been anywhere exciting recently?",
+            "What's your favorite thing to eat?",
+            "Tell me about where you're from!",
+          ].map((phrase) => (
+            <div
+              key={phrase}
+              className="border border-white/10 rounded-lg px-4 py-3 text-md text-white/80">
+              "{phrase}"
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

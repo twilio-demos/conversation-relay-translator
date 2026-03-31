@@ -1,5 +1,5 @@
-import { deleteCintelResults, getCintelResults } from "@/lib/dynamodb";
-import { NextResponse } from "next/server";
+import { deleteCintelResultsByPhone, getCintelResults } from "@/lib/dynamodb";
+import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/cintel
 export async function GET() {
@@ -16,9 +16,19 @@ export async function GET() {
 }
 
 // DELETE /api/cintel
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   try {
-    await deleteCintelResults();
+    const { phoneNumber } = await request.json();
+
+    if (!phoneNumber) {
+      return NextResponse.json(
+        { error: "phoneNumber is required" },
+        { status: 400 }
+      );
+    }
+
+    await deleteCintelResultsByPhone(phoneNumber);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting cintel results:", error);

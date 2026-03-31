@@ -238,9 +238,10 @@ export async function getConversation(
 export async function putCintelOperatorResult(
   operatorResult: OperatorResult,
   operatorFor: "phone1" | "phone2",
-  cintelConversationId: string
+  cintelConversationId: string,
+  phoneNumber?: string
 ): Promise<void> {
-  const stored: StoredOperatorResult = { ...operatorResult, operatorFor, cintelConversationId };
+  const stored: StoredOperatorResult = { ...operatorResult, operatorFor, cintelConversationId, phoneNumber };
   const command = new PutCommand({
     TableName: TABLE_NAME,
     Item: {
@@ -248,10 +249,35 @@ export async function putCintelOperatorResult(
       sk: "cintel",
       pk1: "cintel",
       sk1: operatorResult.dateCreated,
+      phoneNumber,
       data: stored,
     },
   });
   await docClient.send(command);
+}
+
+// Delete cintel operator results by phone number
+export async function deleteCintelResultsByPhone(phoneNumber: string): Promise<void> {
+  const queryCommand = new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: "index-1-full",
+    KeyConditionExpression: "pk1 = :pk1",
+    ExpressionAttributeValues: { ":pk1": "cintel" },
+    FilterExpression: "phoneNumber = :phone",
+    ProjectionExpression: "pk, sk",
+  });
+  queryCommand.input.ExpressionAttributeValues![":phone"] = phoneNumber;
+  const { Items = [] } = await docClient.send(queryCommand);
+  if (Items.length === 0) return;
+
+  for (let i = 0; i < Items.length; i += 25) {
+    const batch = Items.slice(i, i + 25).map((item) => ({
+      DeleteRequest: { Key: { pk: item.pk, sk: item.sk } },
+    }));
+    await docClient.send(
+      new BatchWriteCommand({ RequestItems: { [TABLE_NAME]: batch } })
+    );
+  }
 }
 
 // Delete all cintel operator results

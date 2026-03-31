@@ -13,10 +13,12 @@ import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { LanguageService } from "@/lib/services/language";
 import { useEffect } from "react";
 
-const LANGUAGES = LanguageService.LANGUAGES;
+const LANGUAGES = [...LanguageService.LANGUAGES].sort((a, b) =>
+  a.friendly.localeCompare(b.friendly),
+);
 
 export function LanguageSelector() {
-  const { selectedLanguage, setSelectedLanguage, isPhone1, phone1, setDemoActive } =
+  const { selectedLanguage, setSelectedLanguage, isPhone1, phone1, phone2, setDemoActive } =
     useDemo();
   const { mutate: updateProfile, isPending, isSuccess } = useUpdateProfile();
   const resetLanguage = useResetLanguage();
@@ -24,7 +26,12 @@ export function LanguageSelector() {
   useEffect(() => {
     setDemoActive(true);
     resetLanguage();
-    fetch("/api/cintel", { method: "DELETE" }).catch(console.error);
+    const currentPhone = isPhone1 ? phone1 : phone2;
+    const memoryHeaders = { "Content-Type": "application/json" };
+    const body = JSON.stringify({ phoneNumber: currentPhone });
+    fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleLanguageChange(code: string) {
@@ -69,7 +76,7 @@ export function LanguageSelector() {
           <SelectTrigger className="text-xl h-14">
             <SelectValue placeholder="Select a language..." />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent side="bottom" className="max-h-80">
             {LANGUAGES.map((lang) => (
               <SelectItem
                 key={lang.code}

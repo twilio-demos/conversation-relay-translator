@@ -1,7 +1,7 @@
 "use client";
 
 import { LanguageService } from "@/lib/services/language";
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const LS_PHONE1 = "admin_phone1";
 const LS_PHONE2 = "admin_phone2";
@@ -48,15 +48,15 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [pinnedConversationId, setPinnedConversationId] = useState("");
   const [adminOverride, setAdminOverride] = useState<AdminOverride>(null);
   const [pinnedCintelConversationId, setPinnedCintelConversationId] = useState("");
-  const [phone1, setPhone1Raw] = useState<string>(() =>
-    typeof window !== "undefined" ? (localStorage.getItem(LS_PHONE1) ?? DEFAULT_PHONE1) : DEFAULT_PHONE1
-  );
-  const [phone2, setPhone2Raw] = useState<string>(() =>
-    typeof window !== "undefined" ? (localStorage.getItem(LS_PHONE2) ?? DEFAULT_PHONE2) : DEFAULT_PHONE2
-  );
-  const [isPhone1, setIsPhone1Raw] = useState<boolean>(() =>
-    typeof window !== "undefined" ? localStorage.getItem(LS_IS_PHONE1) === "true" : false
-  );
+  const [phone1, setPhone1Raw] = useState<string>(DEFAULT_PHONE1);
+  const [phone2, setPhone2Raw] = useState<string>(DEFAULT_PHONE2);
+  const [isPhone1, setIsPhone1Raw] = useState<boolean>(false);
+
+  useEffect(() => {
+    setPhone1Raw(localStorage.getItem(LS_PHONE1) ?? DEFAULT_PHONE1);
+    setPhone2Raw(localStorage.getItem(LS_PHONE2) ?? DEFAULT_PHONE2);
+    setIsPhone1Raw(localStorage.getItem(LS_IS_PHONE1) === "true");
+  }, []);
   const prevCallActive = useRef(false);
 
   function setIsPhone1(v: boolean) {
@@ -90,7 +90,12 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setAdminOverride(null);
     setPinnedCintelConversationId("");
     prevCallActive.current = false;
-    fetch("/api/cintel", { method: "DELETE" }).catch(console.error);
+    const currentPhone = isPhone1 ? phone1 : phone2;
+    const memoryHeaders = { "Content-Type": "application/json" };
+    const body = JSON.stringify({ phoneNumber: currentPhone });
+    fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
   }
 
   function handleSetSelectedLanguage(lang: Language | null) {
