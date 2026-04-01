@@ -175,7 +175,7 @@ export async function listProfiles(creator?: string): Promise<UserProfile[]> {
   return response.Items ? response.Items.map(dynamoDBToProfile) : [];
 }
 
-export async function listSessions(creator?: string): Promise<Session[]> {
+export async function listAllSessions(): Promise<Session[]> {
   const command = new QueryCommand({
     TableName: TABLE_NAME,
     IndexName: "index-1-full",
@@ -186,17 +186,11 @@ export async function listSessions(creator?: string): Promise<Session[]> {
   });
 
   const response = await docClient.send(command);
-  const allSessions = response.Items
+  return response.Items
     ? response.Items.filter((s) => s.calleeLanguageFriendly).map(
         dynamoDBToSession
       )
     : [];
-
-  if (!creator) return allSessions;
-
-  const profiles = await listProfiles(creator);
-  const phoneNumbers = new Set(profiles.map((p) => p.phoneNumber));
-  return allSessions.filter((s) => phoneNumbers.has(s.phoneNumber));
 }
 
 // Get session by ID

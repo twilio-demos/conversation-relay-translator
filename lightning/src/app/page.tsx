@@ -1,14 +1,10 @@
-import { listSessions } from "@/lib/dynamodb";
-import { getServerSession } from "next-auth/next";
+import { listAllSessions } from "@/lib/dynamodb";
 import { ClientHomepage } from "./components/pages/homepage";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const session = await getServerSession();
-  const owner =
-    process.env.NEXT_PUBLIC_EMAIL || session?.user?.email || undefined;
-  const sessions = await listSessions(owner);
+  const sessions = await listAllSessions();
 
   return <ClientHomepage serverSessions={sessions} />;
 }
