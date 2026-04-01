@@ -34,6 +34,7 @@ type DemoContextValue = {
   setPhone2: (v: string) => void;
   isPhone1: boolean;
   setIsPhone1: (v: boolean) => void;
+  savePhones: (p1: string, p2: string) => Promise<void>;
 };
 
 const DemoContext = createContext<DemoContextValue | null>(null);
@@ -58,13 +59,25 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setPhone1Raw(p1);
     setPhone2Raw(p2);
     setIsPhone1Raw(localStorage.getItem(LS_IS_PHONE1) === "true");
-    fetch(`/api/profiles/${encodeURIComponent(p1)}?phone2=${encodeURIComponent(p2)}`).catch(console.error);
+    fetchProfiles(p1, p2);
   }, []);
   const prevCallActive = useRef(false);
 
   function setIsPhone1(v: boolean) {
     localStorage.setItem(LS_IS_PHONE1, String(v));
     setIsPhone1Raw(v);
+  }
+
+  function sanitizePhone(v: string) {
+    return "+" + v.replace(/[^\d]/g, "");
+  }
+
+  async function fetchProfiles(p1: string, p2: string) {
+    await fetch(`/api/profiles/${encodeURIComponent(p1)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone2: p2 }),
+    });
   }
 
   function setPhone1(v: string) {
@@ -74,6 +87,14 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   function setPhone2(v: string) {
     localStorage.setItem(LS_PHONE2, v);
     setPhone2Raw(v);
+  }
+
+  async function savePhones(p1: string, p2: string) {
+    const clean1 = sanitizePhone(p1);
+    const clean2 = sanitizePhone(p2);
+    setPhone1(clean1);
+    setPhone2(clean2);
+    await fetchProfiles(clean1, clean2);
   }
 
   function handleSetCallActive(active: boolean) {
@@ -133,6 +154,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         setPhone2,
         isPhone1,
         setIsPhone1,
+        savePhones,
       }}>
       {children}
     </DemoContext.Provider>

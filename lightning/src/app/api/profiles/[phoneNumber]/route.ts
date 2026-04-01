@@ -37,48 +37,42 @@ export async function PUT(
   }
 }
 
-export async function GET(
+export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ phoneNumber: string }> }
 ) {
   try {
     const { phoneNumber: rawPhoneNumber } = await params;
     const cleanPhoneNumber1 = decodeURIComponent(rawPhoneNumber);
-    const cleanPhoneNumber2 = request.nextUrl.searchParams.get("phone2") ?? "";
+    const { phone2: cleanPhoneNumber2 = "" } = await request.json();
 
-    const currentProfile = (await listProfiles()).filter(
-      (p) => p.phoneNumber === cleanPhoneNumber1
-    )[0];
+    const defaults: UserProfile = {
+      phoneNumber: cleanPhoneNumber1,
+      name: "Automated",
+      sourceLanguage: "en-US",
+      sourceLanguageCode: "en",
+      sourceLanguageFriendly: "English - United States",
+      sourceTranscriptionProvider: "Deepgram",
+      sourceTtsProvider: "ElevenLabs",
+      sourceVoice: "UgBBYS2sOqTuMpoF3BR0",
+      calleeDetails: true,
+      calleeNumber: cleanPhoneNumber2,
+      calleeLanguage: "en-US",
+      calleeLanguageCode: "en",
+      calleeLanguageFriendly: "English - United States",
+      calleeTranscriptionProvider: "Deepgram",
+      calleeTtsProvider: "ElevenLabs",
+      calleeVoice: "UgBBYS2sOqTuMpoF3BR0",
+      useFlex: false,
+      flexNumber: process.env.NEXT_PUBLIC_FLEX_NUMBER ?? "",
+      flexWorkerHandle: "",
+      useExternalFlex: false,
+      externalFlexNumber: "",
+      customSourceHash: "",
+      customCalleeHash: "",
+    };
 
-    if (!currentProfile) {
-      const defaults: UserProfile = {
-        phoneNumber: cleanPhoneNumber1,
-        name: "Automated",
-        sourceLanguage: "en-US",
-        sourceLanguageCode: "en",
-        sourceLanguageFriendly: "English - United States",
-        sourceTranscriptionProvider: "Deepgram",
-        sourceTtsProvider: "ElevenLabs",
-        sourceVoice: "UgBBYS2sOqTuMpoF3BR0",
-        calleeDetails: true,
-        calleeNumber: cleanPhoneNumber2,
-        calleeLanguage: "en-US",
-        calleeLanguageCode: "en",
-        calleeLanguageFriendly: "English - United States",
-        calleeTranscriptionProvider: "Deepgram",
-        calleeTtsProvider: "ElevenLabs",
-        calleeVoice: "UgBBYS2sOqTuMpoF3BR0",
-        useFlex: false,
-        flexNumber: process.env.NEXT_PUBLIC_FLEX_NUMBER ?? "",
-        flexWorkerHandle: "",
-        useExternalFlex: false,
-        externalFlexNumber: "",
-        customSourceHash: "",
-        customCalleeHash: "",
-      };
-
-      await putProfile(defaults);
-    }
+    await putProfile(defaults);
 
     return NextResponse.json({ success: true });
   } catch (error) {

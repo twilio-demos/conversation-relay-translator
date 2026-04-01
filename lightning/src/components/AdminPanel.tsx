@@ -13,7 +13,14 @@ const VIEWS: { label: string; value: AdminOverride }[] = [
 export function AdminPanel() {
   const searchParams = useSearchParams();
   const [visible, setVisible] = useState(false);
-  const { adminOverride, setAdminOverride, phone1, setPhone1, phone2, setPhone2, isPhone1, setIsPhone1, resetDemo } = useDemo();
+  const { adminOverride, setAdminOverride, phone1, phone2, isPhone1, setIsPhone1, resetDemo, savePhones } = useDemo();
+  const [draftPhone1, setDraftPhone1] = useState(phone1);
+  const [draftPhone2, setDraftPhone2] = useState(phone2);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    setDraftPhone1(phone1);
+    setDraftPhone2(phone2);
+  }, [phone1, phone2]);
 
   useEffect(() => {
     if (searchParams.get("admin") !== null) {
@@ -21,8 +28,7 @@ export function AdminPanel() {
     }
     const p1 = searchParams.get("phone1");
     const p2 = searchParams.get("phone2");
-    if (p1) setPhone1(p1);
-    if (p2) setPhone2(p2);
+    if (p1 || p2) savePhones(p1 ?? phone1, p2 ?? phone2);
   }, [searchParams]);
 
   useEffect(() => {
@@ -71,8 +77,8 @@ export function AdminPanel() {
           <p className="text-xs text-white/40 mb-1">Phone 1</p>
           <input
             type="tel"
-            value={phone1}
-            onChange={(e) => setPhone1(e.target.value)}
+            value={draftPhone1}
+            onChange={(e) => setDraftPhone1(e.target.value)}
             className="w-full bg-white/10 text-white text-xs rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-white/30"
             placeholder="+1..."
           />
@@ -90,12 +96,21 @@ export function AdminPanel() {
           <p className="text-xs text-white/40 mb-1">Phone 2</p>
           <input
             type="tel"
-            value={phone2}
-            onChange={(e) => setPhone2(e.target.value)}
+            value={draftPhone2}
+            onChange={(e) => setDraftPhone2(e.target.value)}
             className="w-full bg-white/10 text-white text-xs rounded-lg px-2 py-1.5 outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-white/30"
             placeholder="+1..."
           />
         </div>
+        <button
+          disabled={saving}
+          onClick={async () => {
+            setSaving(true);
+            try { await savePhones(draftPhone1, draftPhone2); } finally { setSaving(false); }
+          }}
+          className="w-full text-xs px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          {saving ? "Saving..." : "Save Phones"}
+        </button>
       </div>
       <button
         onClick={resetDemo}
