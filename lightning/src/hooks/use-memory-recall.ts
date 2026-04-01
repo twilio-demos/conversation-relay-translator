@@ -47,6 +47,6 @@ export function useMemoryRecall(params: MemoryRecallParams | null) {
     queryKey: ["memory", params],
     queryFn: () => fetchMemoryRecall(params!),
     enabled: !!params?.phoneNumber,
-    refetchInterval: 5000,
+    refetchInterval: 2000,
   });
 }
