@@ -26,6 +26,8 @@ import { replyToWS } from "/opt/reply-to-ws.mjs"; // Reply to WebSocket API Gate
 import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
 const snsClient = new SNSClient({ region: process.env.AWS_REGION });
 
+import { broadcastToSync } from "./sync.mjs";
+
 const analytics = new Analytics({
   writeKey: process.env.SEGMENT_WRITE_KEY,
   flushAt: 1,
@@ -54,6 +56,31 @@ export const lambdaHandler = async (event, context) => {
   try {
     // Prompts contain text from converted speech
     if (body?.type === "prompt") {
+      // Only translate once we have the full sentence
+      if (!body.last) {
+        // Broadcast partial transcription to frontend for real-time display
+        const partialConn = await ddbDocClient.send(
+          new GetCommand({
+            TableName: process.env.TABLE_NAME,
+            Key: { pk: connectionId, sk: "connection" },
+          })
+        );
+        const partialParty = partialConn.Item;
+        // Always broadcast to the caller's phone number stream
+        const partialStreamPhone = partialParty?.whichParty === "caller"
+          ? partialParty.From
+          : partialParty?.callerPhone;
+        if (partialStreamPhone) {
+          await broadcastToSync(partialStreamPhone, {
+            type: "transcription",
+            text: body.voicePrompt,
+            role: partialParty.whichParty === "caller" ? "user" : "assistant",
+            isFinal: false,
+          });
+        }
+        return { statusCode: 200, body: "Partial prompt, waiting for final." };
+      }
+
       // Get the core details from this connection
       const callConnection = await ddbDocClient.send(
         new GetCommand({
@@ -150,6 +177,19 @@ export const lambdaHandler = async (event, context) => {
             Item: itm,
           })
         );
+
+        // Broadcast final transcription to frontend via Sync (always to caller's stream)
+        const streamPhone = party.whichParty === "caller"
+          ? party.From
+          : party.callerPhone;
+        if (streamPhone) {
+          await broadcastToSync(streamPhone, {
+            type: "transcription",
+            text: body.voicePrompt,
+            role: party.whichParty === "caller" ? "user" : "assistant",
+            isFinal: true,
+          });
+        }
 
         await analytics.track({
           event: "Speech",

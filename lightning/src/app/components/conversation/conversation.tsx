@@ -1,11 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useDemo } from "@/components/DemoProvider";
 import { useConversation } from "@/hooks/use-conversation";
+import { useSyncTranscript } from "@/hooks/use-sync-transcript";
 import { ConversationMessage } from "@/types/profile";
 import { ChatContainer, MessageList } from "@chatscope/chat-ui-kit-react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import ConversationMessageComponent from "../conversation/conversation-message";
 import "./conversation.css";
 
@@ -18,13 +20,39 @@ export const Conversation = ({ serverConversation, id }: ConversationProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { conversation, isPolling, setIsPolling, showTranslations, session } =
     useConversation(serverConversation || [], id);
+  const { phone1 } = useDemo();
+  const { messages: syncMessages } = useSyncTranscript(phone1);
+
+  // Merge: use polled conversation as base, append any sync messages
+  // that don't yet have a matching polled entry (real-time partials/finals
+  // that polling hasn't picked up yet)
+  const mergedConversation = useMemo(() => {
+    const polledTexts = new Set(conversation.map((m) => m.original));
+    const pending = syncMessages
+      .filter((sm) => !polledTexts.has(sm.text))
+      .map(
+        (sm) =>
+          ({
+            conversationId: id,
+            timestamp: sm.id,
+            whichParty: sm.whichParty,
+            partyConnectionId: "",
+            original: sm.text,
+            originalLanguageCode: "",
+            translated: "",
+            translatedLanguageCode: "",
+            _streaming: !sm.isFinal,
+          }) as ConversationMessage & { _streaming?: boolean }
+      );
+    return [...conversation, ...pending];
+  }, [conversation, syncMessages, id]);
 
   // Auto-scroll to bottom when conversation updates
   useEffect(() => {
     if (scrollContainerRef.current && isPolling) {
       scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
-  }, [conversation]);
+  }, [mergedConversation]);
 
   return (
     <div
@@ -47,9 +75,9 @@ export const Conversation = ({ serverConversation, id }: ConversationProps) => {
       </div>
 
       {/* Stats strip */}
-      {(conversation.length > 0 || session) && (
+      {(mergedConversation.length > 0 || session) && (
         <div className="flex items-center gap-6 px-6 py-2 border-b border-white/10 text-sm text-gray-400">
-          <span>{conversation.length} messages</span>
+          <span>{mergedConversation.length} messages</span>
           {session?.sourceLanguageFriendly && session?.calleeLanguageFriendly && (
             <span className="font-medium text-white/80">
               {session.sourceLanguageFriendly} ⇄ {session.calleeLanguageFriendly}
@@ -63,11 +91,12 @@ export const Conversation = ({ serverConversation, id }: ConversationProps) => {
         <ChatContainer
           style={{ height: "auto", width: "100%", border: "none" }}>
           <MessageList style={{ height: "auto" }}>
-            {conversation.map((m, idx) => (
+            {mergedConversation.map((m, idx) => (
               <ConversationMessageComponent
                 key={`${m.timestamp}-${idx}`}
                 message={m}
                 showTranslation={showTranslations}
+                streaming={"_streaming" in m && !!(m as any)._streaming}
               />
             ))}
           </MessageList>

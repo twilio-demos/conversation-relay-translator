@@ -152,6 +152,7 @@ export const lambdaHandler = async (event, context) => {
       transcriptionProvider: userContext.sourceTranscriptionProvider,
       ttsProvider: userContext.sourceTtsProvider,
       voice: userContext.sourceVoice,
+      partialPrompts: true,
     };
 
     // 4) Generate Twiml to spin up ConversationRelay connection

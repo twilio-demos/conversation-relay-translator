@@ -5,11 +5,13 @@ import "./conversation-message.css";
 export type ConversationMessageProps = {
   message: ConversationMessage;
   showTranslation?: boolean;
+  streaming?: boolean;
 };
 
 export default function ConversationMessageComponent({
   message,
   showTranslation = true,
+  streaming = false,
 }: ConversationMessageProps) {
   const isCaller = message.whichParty === "caller";
   const label = isCaller ? "You:" : "Caller:";
@@ -38,11 +40,13 @@ export default function ConversationMessageComponent({
           <div style={{ flex: 1 }}>
             <div
               style={{
-                color: "#e2e8f0",
+                color: streaming ? "#94a3b8" : "#e2e8f0",
                 fontSize: "1.4rem",
                 lineHeight: "1.6",
+                fontStyle: streaming ? "italic" : "normal",
               }}>
               {message.original}
+              {streaming && <span className="animate-pulse"> ...</span>}
             </div>
             {showTranslation && message.translated && (
               <div

@@ -23,6 +23,10 @@ Parameters:
   SegmentWriteKey:
     Type: String
     Description: Segment Write Key
+  SyncServiceSid:
+    Type: String
+    Description: Twilio Sync Service SID
+    Default: default
 
 Globals:
   Function:
@@ -313,7 +317,7 @@ Resources:
         - arm64     
       MemorySize: 1024  
       Timeout: 30
-      Layers: 
+      Layers:
         - !Ref ConversationRelayDynamoDBUtilLayer
         - !Ref ConversationRelayInvokeTranslateLayer
         - !Ref ConversationRelayReplyToWSLayer
@@ -324,6 +328,9 @@ Resources:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
           TWILIO_INITIATE_CALL_TOPIC: !Ref TwilioInitiateCallTopic
           SEGMENT_WRITE_KEY: !Ref SegmentWriteKey
+          TWILIO_ACCOUNT_SID: !Ref TwilioAccountSid
+          TWILIO_AUTH_TOKEN: !Ref TwilioAuthToken
+          SYNC_SERVICE_SID: !Ref SyncServiceSid
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PrimaryDynamoDBTable

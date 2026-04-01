@@ -196,6 +196,7 @@ export const lambdaHandler = async (event, context) => {
       transcriptionProvider: agentContext.sourceTranscriptionProvider,
       ttsProvider: agentContext.sourceTtsProvider,
       voice: agentContext.sourceVoice,
+      partialPrompts: true,
     };
 
     console.info(
