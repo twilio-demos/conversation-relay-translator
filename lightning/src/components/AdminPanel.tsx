@@ -2,6 +2,7 @@
 
 import { AdminOverride, useDemo } from "@/components/DemoProvider";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const VIEWS: { label: string; value: AdminOverride }[] = [
   { label: "Language Selector", value: "language" },
@@ -10,8 +11,19 @@ const VIEWS: { label: string; value: AdminOverride }[] = [
 ];
 
 export function AdminPanel() {
+  const searchParams = useSearchParams();
   const [visible, setVisible] = useState(false);
   const { adminOverride, setAdminOverride, phone1, setPhone1, phone2, setPhone2, isPhone1, setIsPhone1, resetDemo } = useDemo();
+
+  useEffect(() => {
+    if (searchParams.get("admin") !== null) {
+      setVisible(true);
+    }
+    const p1 = searchParams.get("phone1");
+    const p2 = searchParams.get("phone2");
+    if (p1) setPhone1(p1);
+    if (p2) setPhone2(p2);
+  }, [searchParams]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -26,7 +38,9 @@ export function AdminPanel() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-gray-900 border border-white/20 rounded-xl p-4 shadow-2xl w-56">
+    <>
+    <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={() => setVisible(false)} />
+    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-gray-900 border border-white/20 rounded-xl p-6 shadow-2xl w-96">
       <p className="text-xs font-mono text-white/50 mb-3 uppercase tracking-widest">
         Admin Override
       </p>
@@ -90,5 +104,6 @@ export function AdminPanel() {
       </button>
       <p className="text-xs text-white/30 mt-3">Ctrl+Shift+A to toggle</p>
     </div>
+    </>
   );
 }

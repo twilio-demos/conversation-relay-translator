@@ -235,7 +235,12 @@ export async function putCintelOperatorResult(
   cintelConversationId: string,
   phoneNumber?: string
 ): Promise<void> {
-  const stored: StoredOperatorResult = { ...operatorResult, operatorFor, cintelConversationId, phoneNumber };
+  const stored: StoredOperatorResult = {
+    ...operatorResult,
+    operatorFor,
+    cintelConversationId,
+    phoneNumber,
+  };
   const command = new PutCommand({
     TableName: TABLE_NAME,
     Item: {
@@ -251,7 +256,9 @@ export async function putCintelOperatorResult(
 }
 
 // Delete cintel operator results by phone number
-export async function deleteCintelResultsByPhone(phoneNumber: string): Promise<void> {
+export async function deleteCintelResultsByPhone(
+  phoneNumber: string
+): Promise<void> {
   const queryCommand = new QueryCommand({
     TableName: TABLE_NAME,
     IndexName: "index-1-full",
@@ -307,7 +314,9 @@ export async function getCintelResults(): Promise<StoredOperatorResult[]> {
     ScanIndexForward: false,
   });
   const response = await docClient.send(command);
-  return response.Items ? response.Items.map((item) => item.data as StoredOperatorResult) : [];
+  return response.Items
+    ? response.Items.map((item) => item.data as StoredOperatorResult)
+    : [];
 }
 
 // Delete a profile

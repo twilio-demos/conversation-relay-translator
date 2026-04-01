@@ -53,9 +53,12 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [isPhone1, setIsPhone1Raw] = useState<boolean>(false);
 
   useEffect(() => {
-    setPhone1Raw(localStorage.getItem(LS_PHONE1) ?? DEFAULT_PHONE1);
-    setPhone2Raw(localStorage.getItem(LS_PHONE2) ?? DEFAULT_PHONE2);
+    const p1 = localStorage.getItem(LS_PHONE1) ?? DEFAULT_PHONE1;
+    const p2 = localStorage.getItem(LS_PHONE2) ?? DEFAULT_PHONE2;
+    setPhone1Raw(p1);
+    setPhone2Raw(p2);
     setIsPhone1Raw(localStorage.getItem(LS_IS_PHONE1) === "true");
+    fetch(`/api/profiles/${encodeURIComponent(p1)}?phone2=${encodeURIComponent(p2)}`).catch(console.error);
   }, []);
   const prevCallActive = useRef(false);
 

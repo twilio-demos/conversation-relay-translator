@@ -4,8 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ConversationRelay Translator",
-  description: "Manage translation profiles and settings",
+  title: "Signal H2H",
+  description: "Human to Human translation",
 };
 
 export default function RootLayout({
