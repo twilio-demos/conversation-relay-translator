@@ -97,9 +97,9 @@ export async function POST(request: NextRequest) {
           ? "CUSTOMER"
           : "HUMAN_AGENT";
 
-      const operatorFor = messageSentBy === "CUSTOMER" ? "phone1" : "phone2";
       const phoneNumber =
         messageSentBy === "CUSTOMER" ? customerPhone : agentPhone;
+      const operatorFor = phoneNumber ?? (messageSentBy === "CUSTOMER" ? "phone1" : "phone2");
 
       await putCintelOperatorResult(
         result,

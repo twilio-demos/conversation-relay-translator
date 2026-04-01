@@ -231,7 +231,7 @@ export async function getConversation(
 // Store an operator result keyed by its unique id
 export async function putCintelOperatorResult(
   operatorResult: OperatorResult,
-  operatorFor: "phone1" | "phone2",
+  operatorFor: string,
   cintelConversationId: string,
   phoneNumber?: string
 ): Promise<void> {

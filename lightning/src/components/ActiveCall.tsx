@@ -5,7 +5,7 @@ import { useCintelResults } from "@/hooks/use-cintel-result";
 import { useEffect } from "react";
 
 export function ActiveCall() {
-  const { selectedLanguage, isPhone1, setPinnedCintelConversationId } = useDemo();
+  const { selectedLanguage, isPhone1, phone1, phone2, setPinnedCintelConversationId } = useDemo();
   const { data: allResults } = useCintelResults();
 
   useEffect(() => {
@@ -16,8 +16,9 @@ export function ActiveCall() {
   const results = (() => {
     if (!allResults) return undefined;
 
+    const otherPhone = isPhone1 ? phone2 : phone1;
     const filtered = allResults.filter(
-      (r) => r.operatorFor === (isPhone1 ? "phone2" : "phone1")
+      (r) => r.operatorFor === otherPhone
     );
 
     const sorted = [...filtered].sort(
