@@ -6,16 +6,19 @@ export type ConversationMessageProps = {
   message: ConversationMessage;
   showTranslation?: boolean;
   streaming?: boolean;
+  isPhone1?: boolean;
 };
 
 export default function ConversationMessageComponent({
   message,
   showTranslation = true,
   streaming = false,
+  isPhone1 = true,
 }: ConversationMessageProps) {
   const isCaller = message.whichParty === "caller";
-  const label = isCaller ? "You:" : "Caller:";
-  const labelColor = isCaller ? "#ffffff" : "#e53935";
+  const isYou = isPhone1 ? isCaller : !isCaller;
+  const label = isYou ? "You:" : "Caller:";
+  const labelColor = isYou ? "#ffffff" : "#e53935";
 
   return (
     <Message

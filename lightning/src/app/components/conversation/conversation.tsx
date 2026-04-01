@@ -20,7 +20,7 @@ export const Conversation = ({ serverConversation, id }: ConversationProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { conversation, isPolling, setIsPolling, showTranslations, session } =
     useConversation(serverConversation || [], id);
-  const { phone1 } = useDemo();
+  const { phone1, isPhone1 } = useDemo();
   const { messages: syncMessages } = useSyncTranscript(phone1);
 
   // Merge: use polled conversation as base, append any sync messages
@@ -97,6 +97,7 @@ export const Conversation = ({ serverConversation, id }: ConversationProps) => {
                 message={m}
                 showTranslation={showTranslations}
                 streaming={"_streaming" in m && !!(m as any)._streaming}
+                isPhone1={isPhone1}
               />
             ))}
           </MessageList>
