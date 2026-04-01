@@ -95,6 +95,8 @@ export const lambdaHandler = async (event, context) => {
          * 3. save the original and translated text to the database
          */
 
+        // fire to sync
+
         // 1. translate the text from speech => invokeTranslate(text, sourceLanguageCode, targetLanguageCode)
         const translateObject = await invokeTranslate(
           body.voicePrompt,

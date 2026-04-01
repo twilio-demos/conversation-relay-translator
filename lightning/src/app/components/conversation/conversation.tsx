@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useConversation } from "@/hooks/use-conversation";
 import { ConversationMessage } from "@/types/profile";
@@ -17,7 +16,7 @@ export type ConversationProps = {
 
 export const Conversation = ({ serverConversation, id }: ConversationProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { conversation, isPolling, setIsPolling, showTranslations, languages } =
+  const { conversation, isPolling, setIsPolling, showTranslations, session } =
     useConversation(serverConversation || [], id);
 
   // Auto-scroll to bottom when conversation updates
@@ -48,16 +47,14 @@ export const Conversation = ({ serverConversation, id }: ConversationProps) => {
       </div>
 
       {/* Stats strip */}
-      {(conversation.length > 0 || languages.size > 0) && (
-        <div className="flex items-center gap-6 px-6 py-2 border-b border-white/10 text-xs text-gray-500">
+      {(conversation.length > 0 || session) && (
+        <div className="flex items-center gap-6 px-6 py-2 border-b border-white/10 text-sm text-gray-400">
           <span>{conversation.length} messages</span>
-          {Array.from(languages)
-            .filter(Boolean)
-            .map((lang) => (
-              <Badge key={lang} variant="outline" className="text-xs">
-                {lang}
-              </Badge>
-            ))}
+          {session?.sourceLanguageFriendly && session?.calleeLanguageFriendly && (
+            <span className="font-medium text-white/80">
+              {session.sourceLanguageFriendly} ⇄ {session.calleeLanguageFriendly}
+            </span>
+          )}
         </div>
       )}
 
