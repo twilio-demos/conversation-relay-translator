@@ -1,20 +1,18 @@
 "use client";
 
-import { useDemo } from "@/components/DemoProvider";
 import { Memory } from "@/components/Memory";
 import { Button } from "@/components/ui/button";
 import { useResetLanguage } from "@/hooks/use-reset-language";
 import { useEffect, useState } from "react";
 
 export function CTA() {
-  const { resetDemo } = useDemo();
   const resetLanguage = useResetLanguage();
   const [countdown, setCountdown] = useState<number | null>(null);
 
   useEffect(() => {
     if (countdown === null) return;
     if (countdown === 0) {
-      resetDemo();
+      window.location.reload();
       return;
     }
     const t = setTimeout(() => setCountdown((c) => (c ?? 1) - 1), 1000);
@@ -34,9 +32,7 @@ export function CTA() {
         disabled={countdown !== null}
         className="w-full"
       >
-        {countdown !== null
-          ? `Restarting in ${countdown}…`
-          : "Restart Demo"}
+        {countdown !== null ? `Restarting in ${countdown}…` : "Restart Demo"}
       </Button>
     </div>
   );
