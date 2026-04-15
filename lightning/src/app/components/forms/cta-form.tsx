@@ -25,9 +25,10 @@ async function submitForm(data: CtaFormData) {
 
 interface CtaFormProps {
   onSuccess?: () => void;
+  onContinue?: () => void;
 }
 
-export function CtaForm({ onSuccess }: CtaFormProps) {
+export function CtaForm({ onSuccess, onContinue }: CtaFormProps) {
   const [form, setForm] = useState<CtaFormData>({
     fullName: "",
     email: "",
@@ -58,7 +59,7 @@ export function CtaForm({ onSuccess }: CtaFormProps) {
       <div className="text-center py-8 space-y-4">
         <p className="text-lg font-medium">Thanks for reaching out!</p>
         <p className="text-muted-foreground">We'll be in touch soon.</p>
-        <Button className="w-full" onClick={() => window.location.reload()}>
+        <Button className="w-full" onClick={onContinue}>
           Continue
         </Button>
       </div>

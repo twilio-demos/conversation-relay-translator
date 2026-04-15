@@ -22,7 +22,7 @@ export function CtaDialog({ open, onClose }: CtaDialogProps) {
       />
       <div className="relative z-10 w-full max-w-md rounded-lg border border-white/10 bg-gray-950 p-6 shadow-2xl">
         <p className="text-lg font-semibold text-white mb-4">Contact</p>
-        <CtaForm onSuccess={() => setSubmitted(true)} />
+        <CtaForm onSuccess={() => setSubmitted(true)} onContinue={onClose} />
         {!submitted && (
           <Button
             variant="ghost"
