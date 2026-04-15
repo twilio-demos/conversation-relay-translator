@@ -2,6 +2,7 @@
 
 import { CtaForm } from "@/app/components/forms/cta-form";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface CtaDialogProps {
   open: boolean;
@@ -9,6 +10,8 @@ interface CtaDialogProps {
 }
 
 export function CtaDialog({ open, onClose }: CtaDialogProps) {
+  const [submitted, setSubmitted] = useState(false);
+
   if (!open) return null;
 
   return (
@@ -19,14 +22,16 @@ export function CtaDialog({ open, onClose }: CtaDialogProps) {
       />
       <div className="relative z-10 w-full max-w-md rounded-lg border border-white/10 bg-gray-950 p-6 shadow-2xl">
         <p className="text-lg font-semibold text-white mb-4">Contact</p>
-        <CtaForm />
-        <Button
-          variant="ghost"
-          className="w-full mt-3 text-muted-foreground"
-          onClick={onClose}
-        >
-          Skip
-        </Button>
+        <CtaForm onSuccess={() => setSubmitted(true)} />
+        {!submitted && (
+          <Button
+            variant="ghost"
+            className="w-full mt-3 text-muted-foreground"
+            onClick={onClose}
+          >
+            Skip
+          </Button>
+        )}
       </div>
     </div>
   );

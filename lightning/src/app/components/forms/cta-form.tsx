@@ -1,12 +1,10 @@
 "use client";
 
-import { useDemo } from "@/components/DemoProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useResetLanguage } from "@/hooks/use-reset-language";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface CtaFormData {
   fullName: string;
@@ -25,34 +23,24 @@ async function submitForm(data: CtaFormData) {
   return res.json();
 }
 
-export function CtaForm() {
+interface CtaFormProps {
+  onSuccess?: () => void;
+}
+
+export function CtaForm({ onSuccess }: CtaFormProps) {
   const [form, setForm] = useState<CtaFormData>({
     fullName: "",
     email: "",
     company: "",
     businessUseCase: "",
   });
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const { resetDemo } = useDemo();
-  const resetLanguage = useResetLanguage();
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
     mutationFn: submitForm,
     onSuccess: () => {
-      resetLanguage();
-      setCountdown(3);
+      onSuccess?.();
     },
   });
-
-  useEffect(() => {
-    if (countdown === null) return;
-    if (countdown === 0) {
-      resetDemo();
-      return;
-    }
-    const t = setTimeout(() => setCountdown((c) => (c ?? 1) - 1), 1000);
-    return () => clearTimeout(t);
-  }, [countdown]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,14 +55,12 @@ export function CtaForm() {
 
   if (isSuccess) {
     return (
-      <div className="text-center py-8 space-y-2">
+      <div className="text-center py-8 space-y-4">
         <p className="text-lg font-medium">Thanks for reaching out!</p>
         <p className="text-muted-foreground">We'll be in touch soon.</p>
-        {countdown !== null && (
-          <p className="text-sm text-muted-foreground">
-            Restarting in {countdown}…
-          </p>
-        )}
+        <Button className="w-full" onClick={() => window.location.reload()}>
+          Continue
+        </Button>
       </div>
     );
   }
