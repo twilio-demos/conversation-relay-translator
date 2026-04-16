@@ -26,12 +26,13 @@ export function LanguageSelector() {
   useEffect(() => {
     setDemoActive(true);
     resetLanguage();
-    const currentPhone = isPhone1 ? phone1 : phone2;
     const memoryHeaders = { "Content-Type": "application/json" };
-    const body = JSON.stringify({ phoneNumber: currentPhone });
-    fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
-    fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
-    fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    for (const phoneNumber of [phone1, phone2]) {
+      const body = JSON.stringify({ phoneNumber });
+      fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+      fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+      fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleLanguageChange(code: string) {
