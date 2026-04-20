@@ -331,3 +331,48 @@ export async function deleteProfile(phoneNumber: string): Promise<void> {
 
   await docClient.send(command);
 }
+
+// Ready state — simple single-item model keyed by fixed pk/sk
+const READY_PK = "demo-ready";
+const READY_SK = "state";
+
+export interface ReadyState {
+  p1Ready: boolean;
+  p2Ready: boolean;
+  p1Phone?: string;
+  p2Phone?: string;
+}
+
+export async function getReadyState(): Promise<ReadyState> {
+  const command = new GetCommand({
+    TableName: TABLE_NAME,
+    Key: { pk: READY_PK, sk: READY_SK },
+  });
+  const response = await docClient.send(command);
+  if (!response.Item) return { p1Ready: false, p2Ready: false };
+  return {
+    p1Ready: response.Item.p1Ready ?? false,
+    p2Ready: response.Item.p2Ready ?? false,
+    p1Phone: response.Item.p1Phone,
+    p2Phone: response.Item.p2Phone,
+  };
+}
+
+export async function putReadyState(update: Partial<ReadyState>): Promise<ReadyState> {
+  const current = await getReadyState();
+  const newState = { ...current, ...update };
+  const command = new PutCommand({
+    TableName: TABLE_NAME,
+    Item: { pk: READY_PK, sk: READY_SK, ...newState },
+  });
+  await docClient.send(command);
+  return newState;
+}
+
+export async function deleteReadyState(): Promise<void> {
+  const command = new DeleteCommand({
+    TableName: TABLE_NAME,
+    Key: { pk: READY_PK, sk: READY_SK },
+  });
+  await docClient.send(command);
+}

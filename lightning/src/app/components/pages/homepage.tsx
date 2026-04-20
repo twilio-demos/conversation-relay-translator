@@ -3,6 +3,7 @@
 import { AdminPanel } from "@/components/AdminPanel";
 import { Config } from "@/components/Config";
 import { useDemo } from "@/components/DemoProvider";
+import { useReadyState } from "@/hooks/use-ready-state";
 import { useSessions } from "@/hooks/use-sessions";
 import { Session } from "@/types/profile";
 import { useEffect } from "react";
@@ -24,6 +25,9 @@ export const ClientHomepage = ({ serverSessions }: ClientHomepageProps) => {
     isPhone1,
   } = useDemo();
   const publicPhone = process.env.NEXT_PUBLIC_PHONE_NUMBER;
+  const { readyState } = useReadyState();
+  const myReady = isPhone1 ? readyState.p1Ready : readyState.p2Ready;
+  const otherReady = isPhone1 ? readyState.p2Ready : readyState.p1Ready;
 
   const currentSession = sessions
     .filter(
@@ -59,18 +63,28 @@ export const ClientHomepage = ({ serverSessions }: ClientHomepageProps) => {
               style={{ boxShadow: "inset 0 0 30px rgba(99,179,237,0.15)" }}>
               {isPhone1 ? (
                 <>
-                  Pick a language and call&nbsp;
-                  <span className="text-foreground font-medium">
-                    {publicPhone}
-                  </span>
-                  &nbsp; to start
+                  {myReady && otherReady ? (
+                    <>
+                      Call&nbsp;
+                      <span className="text-foreground font-medium">{publicPhone}</span>
+                      &nbsp;to start
+                    </>
+                  ) : myReady ? (
+                    <>Waiting on the other person to confirm</>
+                  ) : (
+                    <>Pick your language and confirm</>
+                  )}
                 </>
               ) : (
                 <>
-                  Wait on a call from&nbsp;
-                  <span className="text-foreground font-medium">
-                    {publicPhone}
-                  </span>
+                  {myReady ? (
+                    <>
+                      Wait on a call from&nbsp;
+                      <span className="text-foreground font-medium">{publicPhone}</span>
+                    </>
+                  ) : (
+                    <>Pick a language and confirm</>
+                  )}
                 </>
               )}
             </div>

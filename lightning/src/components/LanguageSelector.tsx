@@ -1,6 +1,7 @@
 "use client";
 
 import { useDemo } from "@/components/DemoProvider";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -8,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useReadyState, useSetReady } from "@/hooks/use-ready-state";
 import { useResetLanguage } from "@/hooks/use-reset-language";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { LanguageService } from "@/lib/services/language";
@@ -20,12 +22,18 @@ const LANGUAGES = [...LanguageService.LANGUAGES].sort((a, b) =>
 export function LanguageSelector() {
   const { selectedLanguage, setSelectedLanguage, isPhone1, phone1, phone2, setDemoActive } =
     useDemo();
-  const { mutate: updateProfile, isPending, isSuccess } = useUpdateProfile();
+  const { mutate: updateProfile, isPending } = useUpdateProfile();
   const resetLanguage = useResetLanguage();
+  const { readyState, setReadyState } = useReadyState();
+  const { mutate: setReady, isPending: isSettingReady } = useSetReady();
+
+  const myParty = isPhone1 ? "p1" : "p2";
+  const myReady = isPhone1 ? readyState.p1Ready : readyState.p2Ready;
 
   useEffect(() => {
     setDemoActive(true);
     resetLanguage();
+    fetch("/api/ready", { method: "DELETE" }).catch(console.error);
     const memoryHeaders = { "Content-Type": "application/json" };
     for (const phoneNumber of [phone1, phone2]) {
       const body = JSON.stringify({ phoneNumber });
@@ -65,55 +73,80 @@ export function LanguageSelector() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center text-center gap-6 h-full w-full p-8">
-      <p className="text-3xl font-semibold">Pick your Language!</p>
+    <div className="flex flex-col h-full w-full p-8">
+      <div className="flex flex-col items-center justify-center text-center gap-6 flex-1">
+        {!myReady && <p className="text-3xl font-semibold">Pick your Language!</p>}
 
-      <div className="w-full space-y-3">
-        <label className="text-lg text-muted-foreground">Select Language</label>
-        <Select
-          value={selectedLanguage?.code ?? ""}
-          onValueChange={handleLanguageChange}
-          disabled={isPending}>
-          <SelectTrigger className="text-xl h-14">
-            <SelectValue placeholder="Select a language..." />
-          </SelectTrigger>
-          <SelectContent side="bottom" className="max-h-80">
-            {LANGUAGES.map((lang) => (
-              <SelectItem
-                key={lang.code}
-                value={lang.code}
-                className="text-lg py-2">
-                {lang.friendly}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="h-5 flex items-center justify-center">
-          {isPending && (
-            <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <svg
-                className="animate-spin h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
-              </svg>
-              Saving…
-            </span>
-          )}
+        <div className="w-full space-y-3">
+          <label className="text-lg text-muted-foreground">Select Language</label>
+          <Select
+            value={selectedLanguage?.code ?? ""}
+            onValueChange={handleLanguageChange}
+            disabled={isPending || myReady}>
+            <SelectTrigger className="text-xl h-14">
+              <SelectValue placeholder="Select a language..." />
+            </SelectTrigger>
+            <SelectContent side="bottom" className="max-h-80">
+              {LANGUAGES.map((lang) => (
+                <SelectItem
+                  key={lang.code}
+                  value={lang.code}
+                  className="text-lg py-2">
+                  {lang.friendly}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="h-5 flex items-center justify-center">
+            {isPending && (
+              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                <svg
+                  className="animate-spin h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Saving…
+              </span>
+            )}
+          </div>
         </div>
       </div>
+
+      {selectedLanguage && (
+        <div className="w-full space-y-3">
+          <Button
+            onClick={() => setReady(
+              { party: myParty, ready: !myReady, p1Phone: phone1, p2Phone: phone2 },
+              { onSuccess: (data) => setReadyState(data) }
+            )}
+            disabled={isSettingReady}
+            variant={myReady ? "default" : "outline"}
+            className="w-full h-12 text-lg">
+            {isSettingReady ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                Confirming…
+              </span>
+            ) : myReady ? "Ready ✓" : "Confirm Ready"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

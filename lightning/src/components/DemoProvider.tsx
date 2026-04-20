@@ -120,6 +120,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
     fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
     fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    fetch("/api/ready", { method: "DELETE" }).catch(console.error);
   }
 
   function handleSetSelectedLanguage(lang: Language | null) {
