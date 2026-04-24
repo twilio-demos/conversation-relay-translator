@@ -24,7 +24,7 @@ export function LanguageSelector() {
     useDemo();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const resetLanguage = useResetLanguage();
-  const { readyState, setReadyState } = useReadyState();
+  const { readyState, setReadyState } = useReadyState(phone1);
   const { mutate: setReady, isPending: isSettingReady } = useSetReady();
 
   const myParty = isPhone1 ? "p1" : "p2";
@@ -33,7 +33,7 @@ export function LanguageSelector() {
   useEffect(() => {
     setDemoActive(true);
     resetLanguage();
-    fetch("/api/ready", { method: "DELETE" }).catch(console.error);
+    fetch(`/api/ready?phone1=${encodeURIComponent(phone1)}`, { method: "DELETE" }).catch(console.error);
     const memoryHeaders = { "Content-Type": "application/json" };
     for (const phoneNumber of [phone1, phone2]) {
       const body = JSON.stringify({ phoneNumber });

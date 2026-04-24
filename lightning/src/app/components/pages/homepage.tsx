@@ -25,7 +25,7 @@ export const ClientHomepage = ({ serverSessions }: ClientHomepageProps) => {
     isPhone1,
   } = useDemo();
   const publicPhone = process.env.NEXT_PUBLIC_PHONE_NUMBER;
-  const { readyState } = useReadyState();
+  const { readyState } = useReadyState(phone1);
   const myReady = isPhone1 ? readyState.p1Ready : readyState.p2Ready;
   const otherReady = isPhone1 ? readyState.p2Ready : readyState.p1Ready;
 

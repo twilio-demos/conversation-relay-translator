@@ -332,9 +332,7 @@ export async function deleteProfile(phoneNumber: string): Promise<void> {
   await docClient.send(command);
 }
 
-// Ready state — simple single-item model keyed by fixed pk/sk
-const READY_PK = "demo-ready";
-const READY_SK = "state";
+const READY_SK = "ready";
 
 export interface ReadyState {
   p1Ready: boolean;
@@ -343,10 +341,10 @@ export interface ReadyState {
   p2Phone?: string;
 }
 
-export async function getReadyState(): Promise<ReadyState> {
+export async function getReadyState(phone1: string): Promise<ReadyState> {
   const command = new GetCommand({
     TableName: TABLE_NAME,
-    Key: { pk: READY_PK, sk: READY_SK },
+    Key: { pk: phone1, sk: READY_SK },
   });
   const response = await docClient.send(command);
   if (!response.Item) return { p1Ready: false, p2Ready: false };
@@ -358,21 +356,21 @@ export async function getReadyState(): Promise<ReadyState> {
   };
 }
 
-export async function putReadyState(update: Partial<ReadyState>): Promise<ReadyState> {
-  const current = await getReadyState();
+export async function putReadyState(phone1: string, update: Partial<ReadyState>): Promise<ReadyState> {
+  const current = await getReadyState(phone1);
   const newState = { ...current, ...update };
   const command = new PutCommand({
     TableName: TABLE_NAME,
-    Item: { pk: READY_PK, sk: READY_SK, ...newState },
+    Item: { pk: phone1, sk: READY_SK, ...newState },
   });
   await docClient.send(command);
   return newState;
 }
 
-export async function deleteReadyState(): Promise<void> {
+export async function deleteReadyState(phone1: string): Promise<void> {
   const command = new DeleteCommand({
     TableName: TABLE_NAME,
-    Key: { pk: READY_PK, sk: READY_SK },
+    Key: { pk: phone1, sk: READY_SK },
   });
   await docClient.send(command);
 }

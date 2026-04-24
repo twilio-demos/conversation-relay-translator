@@ -8,14 +8,16 @@ export interface ReadyState {
   p2Phone?: string;
 }
 
-export function useReadyState() {
+export function useReadyState(phone1: string) {
   const [readyState, setReadyState] = useState<ReadyState>({ p1Ready: false, p2Ready: false });
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (!phone1) return;
+
     const poll = async () => {
       try {
-        const res = await fetch("/api/ready");
+        const res = await fetch(`/api/ready?phone1=${encodeURIComponent(phone1)}`);
         if (res.ok) {
           const data = await res.json();
           setReadyState(data);
@@ -30,7 +32,7 @@ export function useReadyState() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [phone1]);
 
   return { readyState, setReadyState };
 }
