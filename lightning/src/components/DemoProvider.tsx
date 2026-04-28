@@ -121,6 +121,25 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
     fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
     fetch(`/api/ready?phone1=${encodeURIComponent(phone1)}`, { method: "DELETE" }).catch(console.error);
+    fetch("/api/conversations?status=ACTIVE")
+      .then((r) => r.json())
+      .then(({ conversations = [] }) => {
+        const systemPhone = process.env.NEXT_PUBLIC_PHONE_NUMBER;
+        const relevant = conversations.filter((c: any) => {
+          const addresses = c.participants?.flatMap((p: any) => p.addresses?.map((a: any) => a.address) ?? []) ?? [];
+          const hasSystem = addresses.includes(systemPhone);
+          const hasParticipant = addresses.includes(phone1) || addresses.includes(phone2);
+          return hasSystem && hasParticipant;
+        });
+        relevant.forEach((c: any) =>
+          fetch("/api/conversations", {
+            method: "PUT",
+            headers: memoryHeaders,
+            body: JSON.stringify({ conversationsId: c.id, status: "CLOSED" }),
+          }).catch(console.error)
+        );
+      })
+      .catch(console.error);
   }
 
   function handleSetSelectedLanguage(lang: Language | null) {

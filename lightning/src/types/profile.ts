@@ -88,6 +88,62 @@ export interface Session {
   expireAt?: number;
 }
 
+export interface ConversationParticipantAddress {
+  address: string;
+  channel: string;
+  channelId: string;
+}
+
+export interface ConversationParticipant {
+  accountId: string;
+  addresses: ConversationParticipantAddress[];
+  conversationId: string;
+  createdAt: string;
+  id: string;
+  name: string | null;
+  profileId: string | null;
+  type: "AI_AGENT" | "CUSTOMER" | string;
+  updatedAt: string;
+}
+
+export interface ConversationStatusCallback {
+  method: string;
+  url: string;
+}
+
+export interface ConversationChannelSettings {
+  captureRules: unknown[];
+  statusTimeouts: unknown | null;
+}
+
+export interface ConversationConfiguration {
+  channelSettings: Record<string, ConversationChannelSettings>;
+  conversationGroupingType: string;
+  conversationsV1Bridge: unknown | null;
+  description: string | null;
+  displayName: string | null;
+  intelligenceConfigurationIds: string[];
+  memoryExtractionEnabled: boolean;
+  memoryStoreId: string | null;
+  statusCallbacks: ConversationStatusCallback[];
+}
+
+export interface CintelConversation {
+  accountId: string;
+  configuration: ConversationConfiguration;
+  configurationId: string;
+  createdAt: string;
+  id: string;
+  name: string | null;
+  participants: ConversationParticipant[];
+  status: "ACTIVE" | "CLOSED" | string;
+  updatedAt: string;
+}
+
+export interface CintelConversationsResponse {
+  conversations: CintelConversation[];
+}
+
 export interface ConversationMessage {
   conversationId: string;
   timestamp: number;
