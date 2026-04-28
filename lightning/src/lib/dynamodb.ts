@@ -1,5 +1,5 @@
 import { OperatorResult, StoredOperatorResult } from "@/types/cintel";
-import { ConversationMessage, UserProfile } from "@/types/profile";
+import { ConversationMessage, Session, UserProfile } from "@/types/profile";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   BatchWriteCommand,
