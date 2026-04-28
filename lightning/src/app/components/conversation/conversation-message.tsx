@@ -17,7 +17,7 @@ export default function ConversationMessageComponent({
 }: ConversationMessageProps) {
   const isCaller = message.whichParty === "caller";
   const isYou = isPhone1 ? isCaller : !isCaller;
-  const label = isYou ? "You:" : "Caller:";
+  const label = isYou ? "You:" : "Callee:";
   const labelColor = isYou ? "#ffffff" : "#e53935";
 
   return (
