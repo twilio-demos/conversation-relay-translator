@@ -28,7 +28,7 @@ async function invokeTranslate(text, sourceLanguageCode, targetLanguageCode) {
     SourceLanguageCode: sourceLanguageCode, // required
     TargetLanguageCode: targetLanguageCode, // required
     Settings: {
-      Formality: "INFORMAL",
+      Formality: "FORMAL",
       Profanity: "MASK",
       Brevity: "ON",
       Engine: "neural",
