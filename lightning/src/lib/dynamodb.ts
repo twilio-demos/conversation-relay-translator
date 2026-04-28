@@ -1,5 +1,5 @@
 import { OperatorResult, StoredOperatorResult } from "@/types/cintel";
-import { ConversationMessage, Session, UserProfile } from "@/types/profile";
+import { ConversationMessage, UserProfile } from "@/types/profile";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   BatchWriteCommand,
@@ -259,20 +259,34 @@ export async function putCintelOperatorResult(
 export async function deleteCintelResultsByPhone(
   phoneNumber: string
 ): Promise<void> {
-  const queryCommand = new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: "index-1-full",
-    KeyConditionExpression: "pk1 = :pk1",
-    ExpressionAttributeValues: { ":pk1": "cintel" },
-    FilterExpression: "phoneNumber = :phone",
-    ProjectionExpression: "pk, sk",
-  });
-  queryCommand.input.ExpressionAttributeValues![":phone"] = phoneNumber;
-  const { Items = [] } = await docClient.send(queryCommand);
-  if (Items.length === 0) return;
+  const matching: { pk: string; sk: string }[] = [];
+  let lastKey: Record<string, any> | undefined;
 
-  for (let i = 0; i < Items.length; i += 25) {
-    const batch = Items.slice(i, i + 25).map((item) => ({
+  do {
+    const response = await docClient.send(
+      new QueryCommand({
+        TableName: TABLE_NAME,
+        IndexName: "index-1-full",
+        KeyConditionExpression: "pk1 = :pk1",
+        ExpressionAttributeValues: { ":pk1": "cintel" },
+        ...(lastKey ? { ExclusiveStartKey: lastKey } : {}),
+      })
+    );
+    for (const item of response.Items ?? []) {
+      if (
+        item.phoneNumber === phoneNumber ||
+        item.data?.phoneNumber === phoneNumber
+      ) {
+        matching.push({ pk: item.pk, sk: item.sk });
+      }
+    }
+    lastKey = response.LastEvaluatedKey;
+  } while (lastKey);
+
+  if (matching.length === 0) return;
+
+  for (let i = 0; i < matching.length; i += 25) {
+    const batch = matching.slice(i, i + 25).map((item) => ({
       DeleteRequest: { Key: { pk: item.pk, sk: item.sk } },
     }));
     await docClient.send(
@@ -356,7 +370,10 @@ export async function getReadyState(phone1: string): Promise<ReadyState> {
   };
 }
 
-export async function putReadyState(phone1: string, update: Partial<ReadyState>): Promise<ReadyState> {
+export async function putReadyState(
+  phone1: string,
+  update: Partial<ReadyState>
+): Promise<ReadyState> {
   const current = await getReadyState(phone1);
   const newState = { ...current, ...update };
   const command = new PutCommand({

@@ -114,12 +114,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setAdminOverride(null);
     setPinnedCintelConversationId("");
     prevCallActive.current = false;
-    const currentPhone = isPhone1 ? phone1 : phone2;
     const memoryHeaders = { "Content-Type": "application/json" };
-    const body = JSON.stringify({ phoneNumber: currentPhone });
-    fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
-    fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
-    fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
+    [phone1, phone2].forEach((phone) => {
+      const phoneBody = JSON.stringify({ phoneNumber: phone });
+      fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body: phoneBody }).catch(console.error);
+      fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body: phoneBody }).catch(console.error);
+      fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body: phoneBody }).catch(console.error);
+    });
     fetch(`/api/ready?phone1=${encodeURIComponent(phone1)}`, { method: "DELETE" }).catch(console.error);
     fetch("/api/conversations?status=ACTIVE")
       .then((r) => r.json())

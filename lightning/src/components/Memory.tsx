@@ -12,7 +12,7 @@ export function Memory() {
     conversationId:
       pinnedCintelConversationId || pinnedConversationId || undefined,
     observationsLimit: 3,
-    summariesLimit: 2,
+    summariesLimit: 1,
   });
 
   const observations = data?.observations ?? [];

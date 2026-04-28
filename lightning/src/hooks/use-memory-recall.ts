@@ -47,6 +47,14 @@ export function useMemoryRecall(params: MemoryRecallParams | null) {
     queryKey: ["memory", params],
     queryFn: () => fetchMemoryRecall(params!),
     enabled: !!params?.phoneNumber,
-    refetchInterval: 2000,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data) return 2000;
+      const obsLimit = params?.observationsLimit ?? Infinity;
+      const sumLimit = params?.summariesLimit ?? Infinity;
+      const obsFull = data.observations.length >= obsLimit;
+      const sumFull = data.summaries.length >= sumLimit;
+      return obsFull && sumFull ? false : 2000;
+    },
   });
 }
