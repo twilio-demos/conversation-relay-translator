@@ -20,6 +20,7 @@ async function translateToEnglish(text: string): Promise<string> {
     TargetLanguageCode: "en",
   });
   const result = await translateClient.send(command);
+  console.log(`[translate] "${text}" → "${result.TranslatedText}"`);
   return result.TranslatedText ?? text;
 }
 
