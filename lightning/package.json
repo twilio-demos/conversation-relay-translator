@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.696.0",
+    "@aws-sdk/client-translate": "^3.1039.0",
+    "@aws-sdk/credential-providers": "^3.1039.0",
     "@aws-sdk/lib-dynamodb": "^3.696.0",
     "@chatscope/chat-ui-kit-react": "^2.1.1",
     "@gtmi/utilities": "^0.1.5",

@@ -1,4 +1,27 @@
+import { TranslateClient, TranslateTextCommand } from "@aws-sdk/client-translate";
+import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
 import { NextRequest, NextResponse } from "next/server";
+
+const translateClient = new TranslateClient({
+  region: process.env.AWS_REGION || "us-east-1",
+  ...(process.env.AWS_ROLE_ARN
+    ? {
+        credentials: awsCredentialsProvider({
+          roleArn: process.env.AWS_ROLE_ARN,
+        }),
+      }
+    : {}),
+});
+
+async function translateToEnglish(text: string): Promise<string> {
+  const command = new TranslateTextCommand({
+    Text: text,
+    SourceLanguageCode: "auto",
+    TargetLanguageCode: "en",
+  });
+  const result = await translateClient.send(command);
+  return result.TranslatedText ?? text;
+}
 
 interface MemoryRecallBody {
   phoneNumber: string;
@@ -82,7 +105,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: data }, { status: response.status });
     }
 
-    return NextResponse.json(data);
+    const [translatedObservations, translatedSummaries] = await Promise.all([
+      Promise.all(
+        (data.observations ?? []).map(async (o: { content: string }) => ({
+          ...o,
+          content: await translateToEnglish(o.content),
+        }))
+      ),
+      Promise.all(
+        (data.summaries ?? []).map(async (s: { content: string }) => ({
+          ...s,
+          content: await translateToEnglish(s.content),
+        }))
+      ),
+    ]);
+
+    return NextResponse.json({
+      ...data,
+      observations: translatedObservations,
+      summaries: translatedSummaries,
+    });
   } catch (error) {
     console.error("Error retrieving memories:", (error as Error)?.message);
     return NextResponse.json(
