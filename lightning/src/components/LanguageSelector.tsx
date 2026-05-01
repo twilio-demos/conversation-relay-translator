@@ -33,11 +33,13 @@ export function LanguageSelector() {
   useEffect(() => {
     setDemoActive(true);
     resetLanguage();
-    const party = isPhone1 ? "p1" : "p2";
+    const currentIsPhone1 = localStorage.getItem("admin_isPhone1") === "true";
+    const currentPhone1 = localStorage.getItem("admin_phone1") ?? phone1;
+    const party = currentIsPhone1 ? "p1" : "p2";
     fetch("/api/ready", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ party, ready: false, p1Phone: phone1 }),
+      body: JSON.stringify({ party, ready: false, p1Phone: currentPhone1 }),
     }).catch(console.error);
     const memoryHeaders = { "Content-Type": "application/json" };
     for (const phoneNumber of [phone1, phone2]) {
