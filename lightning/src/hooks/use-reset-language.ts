@@ -6,13 +6,15 @@ const ENGLISH = LanguageService.LANGUAGES.find((l) => l.code === "en-US")!;
 const ENGLISH_VOICE = LanguageService.ELEVEN_LABS_VOICES.en[0];
 
 export function useResetLanguage() {
-  const { isPhone1, phone1 } = useDemo();
+  const { phone1 } = useDemo();
   const { mutate: updateProfile } = useUpdateProfile();
 
   return function resetLanguage() {
-    if (isPhone1) {
+    const currentIsPhone1 = localStorage.getItem("admin_isPhone1") === "true";
+    const currentPhone1 = localStorage.getItem("admin_phone1") ?? phone1;
+    if (currentIsPhone1) {
       updateProfile({
-        phoneNumber: phone1,
+        phoneNumber: currentPhone1,
         sourceLanguage: ENGLISH.code,
         sourceLanguageCode: ENGLISH.translateCode,
         sourceLanguageFriendly: ENGLISH.friendly,
@@ -20,7 +22,7 @@ export function useResetLanguage() {
       });
     } else {
       updateProfile({
-        phoneNumber: phone1,
+        phoneNumber: currentPhone1,
         calleeLanguage: ENGLISH.code,
         calleeLanguageCode: ENGLISH.translateCode,
         calleeLanguageFriendly: ENGLISH.friendly,
