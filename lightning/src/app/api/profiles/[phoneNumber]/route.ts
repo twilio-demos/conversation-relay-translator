@@ -1,4 +1,4 @@
-import { listProfiles, putProfile } from "@/lib/dynamodb";
+import { getProfile, listProfiles, putProfile } from "@/lib/dynamodb";
 import { UserProfile } from "@/types/profile";
 import { NextRequest, NextResponse } from "next/server";
 

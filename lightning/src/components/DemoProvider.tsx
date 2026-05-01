@@ -121,7 +121,36 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body: phoneBody }).catch(console.error);
       fetch("/api/memory/summaries", { method: "DELETE", headers: memoryHeaders, body: phoneBody }).catch(console.error);
     });
-    fetch(`/api/ready?phone1=${encodeURIComponent(phone1)}`, { method: "DELETE" }).catch(console.error);
+    const party = isPhone1 ? "p1" : "p2";
+    fetch("/api/ready", {
+      method: "PUT",
+      headers: memoryHeaders,
+      body: JSON.stringify({ party, ready: false, p1Phone: phone1 }),
+    }).catch(console.error);
+    const profileDefaults = isPhone1
+      ? {
+          sourceLanguage: "en-US",
+          sourceLanguageCode: "en",
+          sourceLanguageFriendly: "English - United States",
+          sourceTranscriptionProvider: "Deepgram",
+          sourceTtsProvider: "ElevenLabs",
+          sourceVoice: "UgBBYS2sOqTuMpoF3BR0",
+        }
+      : {
+          calleeDetails: true,
+          calleeNumber: phone2,
+          calleeLanguage: "en-US",
+          calleeLanguageCode: "en",
+          calleeLanguageFriendly: "English - United States",
+          calleeTranscriptionProvider: "Deepgram",
+          calleeTtsProvider: "ElevenLabs",
+          calleeVoice: "UgBBYS2sOqTuMpoF3BR0",
+        };
+    fetch(`/api/profiles/${encodeURIComponent(phone1)}`, {
+      method: "PUT",
+      headers: memoryHeaders,
+      body: JSON.stringify(profileDefaults),
+    }).catch(console.error);
     fetch("/api/conversations?status=ACTIVE")
       .then((r) => r.json())
       .then(({ conversations = [] }) => {
