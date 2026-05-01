@@ -46,6 +46,11 @@ export async function POST(
     const cleanPhoneNumber1 = decodeURIComponent(rawPhoneNumber);
     const { phone2: cleanPhoneNumber2 = "" } = await request.json();
 
+    const existing = await getProfile(cleanPhoneNumber1);
+    if (existing && existing.calleeNumber === cleanPhoneNumber2) {
+      return NextResponse.json({ success: true });
+    }
+
     const defaults: UserProfile = {
       phoneNumber: cleanPhoneNumber1,
       name: "Automated",
