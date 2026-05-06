@@ -35,6 +35,7 @@ export function LanguageSelector() {
     resetLanguage();
     const currentIsPhone1 = localStorage.getItem("admin_isPhone1") === "true";
     const currentPhone1 = localStorage.getItem("admin_phone1") ?? phone1;
+    const currentPhone2 = localStorage.getItem("admin_phone2") ?? phone2;
     const party = currentIsPhone1 ? "p1" : "p2";
     fetch("/api/ready", {
       method: "PUT",
@@ -42,7 +43,7 @@ export function LanguageSelector() {
       body: JSON.stringify({ party, ready: false, p1Phone: currentPhone1 }),
     }).catch(console.error);
     const memoryHeaders = { "Content-Type": "application/json" };
-    for (const phoneNumber of [phone1, phone2]) {
+    for (const phoneNumber of [currentPhone1, currentPhone2]) {
       const body = JSON.stringify({ phoneNumber });
       fetch("/api/cintel", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
       fetch("/api/memory/observations", { method: "DELETE", headers: memoryHeaders, body }).catch(console.error);
@@ -55,7 +56,7 @@ export function LanguageSelector() {
         const relevant = conversations.filter((c: any) => {
           const addresses = c.participants?.flatMap((p: any) => p.addresses?.map((a: any) => a.address) ?? []) ?? [];
           const hasSystem = addresses.includes(systemPhone);
-          const hasParticipant = addresses.includes(phone1) || addresses.includes(phone2);
+          const hasParticipant = addresses.includes(currentPhone1) || addresses.includes(currentPhone2);
           return hasSystem && hasParticipant;
         });
         relevant.forEach((c: any) =>
